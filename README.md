@@ -30,7 +30,7 @@ ofertado em 2º/2020 pelo professor [Kenniston](https://github.com/kenniston).
 ## Quickstart:
 Faça o download da base de dados e a coloque dentro de um diretório chamado `'datasets'` na raiz do projeto.
 > *NOTA:* Para mais informações a respeito de como fazer a aquisição da base de dados, por favor leia sessão 
-> [Base de Dados](##Base de Dados). 
+> [Base de Dados](#base-de-dados). 
 
 ## Base de Dados:
 Para esse projeto utilizaremos a base de dados produzida por [Devakumar kp](https://www.kaggle.com/imdevskp) e 
