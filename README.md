@@ -33,12 +33,14 @@ Faça o download da base de dados e a coloque dentro de um diretório chamado `'
 > [Base de Dados](#base-de-dados). 
 
 ## Base de Dados:
-Para esse projeto utilizaremos a base de dados produzida por [Devakumar kp](https://www.kaggle.com/imdevskp) e 
-disponibilizado em seu perfil do Kaggle. 
+Para esse projeto utilizaremos a base de dados produzida por [Raphael Fontes](https://www.kaggle.com/unanimad) e 
+disponibilizado em seu perfil do Kaggle.
 
-O download da versão utilizada no projeto foi realizado no dia 15/09/2020 às 20:32 horas UTC-3 e estará disponível 
+Para construir o banco de dados utilizado nós utilizamos apenas os registros mais recentes de COVID-19 do Brasil.
+
+O download da versão utilizada no projeto foi realizado no dia 17/09/2020 às 21:00 horas UTC-3 e estará disponível 
 no Google Drive pelo link a seguir:
 - [Google Drive](https://drive.google.com/drive/folders/1363-UDdvkU1YIVodrydHpHZVbh7cDCjL?usp=sharing)
 
 Para atualização da base de dados basta faça o download no link abaixo: 
-- [Link para Dataset](https://www.kaggle.com/imdevskp/corona-virus-report)
+- [Link para Dataset](https://www.kaggle.com/unanimad/corona-virus-brazil)
