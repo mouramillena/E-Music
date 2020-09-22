@@ -8,6 +8,10 @@
 
 # Datasets
 *.csv
+*.ipynb
+Dockerfile
+docker-compose.yml
+
 
 
 # User-specific stuff
