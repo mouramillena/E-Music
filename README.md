@@ -11,13 +11,13 @@
         "github": https://github.com/Diogo364
     },
     {
-        "aluna": Millena Moura dos Santos ,
-        "matricula": 1812130012 ,
+        "aluna": Millena Moura dos Santos,
+        "matricula": 1812130012,
         "github": https://github.com/mouramillena 
     },
     {
         "aluna": Jéssica Rodrigues da Silva,
-        "matricula": 1422130043 ,
+        "matricula": 1422130043,
         "github": https://github.com/jessicarodriguess
     }
 }
