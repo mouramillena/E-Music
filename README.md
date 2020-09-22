@@ -16,9 +16,9 @@
         "github": https://github.com/mouramillena 
     },
     {
-        "aluna": ,
-        "matricula": ,
-        "github": 
+        "aluna": Jéssica Rodrigues da Silva,
+        "matricula": 1422130043 ,
+        "github": https://github.com/jessicarodriguess
     }
 }
 ```
