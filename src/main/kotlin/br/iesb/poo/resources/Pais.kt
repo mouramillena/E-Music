@@ -1,6 +1,6 @@
 package br.iesb.poo.resources
 
-class Pais(nome: String) : EnteFederativo(nome){
+class Pais(name: String) : EnteFederativo(name){
 
 
 }
