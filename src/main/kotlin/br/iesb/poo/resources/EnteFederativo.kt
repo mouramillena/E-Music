@@ -1,5 +1,6 @@
 package br.iesb.poo.resources
 
-open class EnteFederativo(var name: String) {
+open class EnteFederativo(
+    var name: String) {
 }
 
