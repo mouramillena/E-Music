@@ -28,23 +28,27 @@ Esse projeto foi desenvolvido como trabalho prático para a disciplina de Progra
 ofertado em 2º/2020 pelo professor [Kenniston](https://github.com/kenniston).
 
 ## Quickstart:
-Faça o download da base de dados e a coloque dentro de um diretório chamado `'datasets'` na raiz do projeto.
+1. Faça o download da base de dados e a coloque dentro de um diretório chamado `'datasets'` na raiz do projeto.
 Seu formato deve ficar como abaixo:
-```
-dataset/
-    cases/
-        brasil.csv
-        cidade.csv
-        regiao.csv
-    users/
-        login.csv
-        nivel_acesso.csv
+    ```
+    dataset/
+        cases/
+            brasil.csv
+            cidade.csv
+            regiao.csv
+        users/
+            login.csv
+            nivel_acesso.csv
+    
+    ```
+    > *NOTA:* Para mais informações a respeito de como fazer a aquisição da base de dados, por favor leia sessão 
+    > [Base de Dados](#base-de-dados). 
 
-```
-> *NOTA:* Para mais informações a respeito de como fazer a aquisição da base de dados, por favor leia sessão 
-> [Base de Dados](#base-de-dados). 
+2. Após esse download basta realizar a construção do projeto e a execução do arquivo 
+`./src/main/kotlin/br/iesb/poo/Server.kt`
 
-Após esse download basta realizar a construção do projeto e a execução do arquivo `./src/main/kotlin/br/iesb/poo/Server.kt`
+3. Agora basta acessar o endereço [https://localhost:8080/](https://localhost:8080/) em seu navegador e seguir as 
+instruções
 
 ## Base de Dados:
 Para esse projeto utilizaremos a base de dados produzida por [Raphael Fontes](https://www.kaggle.com/unanimad) e 
