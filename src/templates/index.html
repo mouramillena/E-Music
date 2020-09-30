@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API COVID19</title>
+</head>
+<body>
+    <h1>Trabalho API de COVID19</h1>
+    <p>Esse trabalho utiliza da implementação de uma API em 
+        Kotlin para manutenção e acompanhamento dos casos de COVID19</p>
+
+    <h2>Como usar</h2>
+    <h3>Login</h3>
+    <p>Essa sessão é referente aos caminhos e métodos para o login:</p>
+    
+    <table style="width:100%">
+        <tr>
+            <th>Motivação</th>
+            <th>Método</th>
+            <th>Caminho</th>
+            <th>Formato</th>
+            <th>Observação</th>
+        </tr>
+        <tr>
+            <td>Realizar o login</td>
+            <td>Post</td>
+            <td>"/login"</td>
+            <td>{<br>
+                "email": "seuemail@server.com",<br>
+                "password": "SUASENHA"<br>
+            }</td>
+            <td>O password padrão é "123456"</td>
+        </tr>
+        <tr>
+            <td>Trocar a senha</td>
+            <td>Post</td>
+            <td>"/mudar_senha"</td>
+            <td>{<br>
+                "email": "seuemail@server.com",<br>
+                "password": "NOVASENHA"<br>
+            }</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Acessar suas informações</td>
+            <td>get</td>
+            <td>"/informacoes-usuario"</td>
+            <td>{<br>
+                "email": "seuemail@server.com",<br>
+                "password": "SUASENHA"<br>
+            }</td>
+            <td></td>
+        </tr>
+    </table>
+    
+</body>
+</html

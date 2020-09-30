@@ -1,89 +1,38 @@
 package br.iesb.poo
+import br.iesb.poo.loaders.CSVLoader
+import br.iesb.poo.resources.entesFederativos.Cidade
+import br.iesb.poo.resources.schemas.CidadeSchema
+import br.iesb.poo.resources.schemas.UsersSchema
+import br.iesb.poo.resources.user.Login
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
+import io.ktor.http.*
+import io.ktor.http.ContentDisposition.Companion.File
+import io.ktor.http.cio.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.h2.engine.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import br.iesb.poo.resources.*
-import org.jetbrains.exposed.sql.jodatime.datetime
 import org.joda.time.DateTime
+import org.joda.time.LocalTime
 import java.io.File
 
 
-fun appendStringToList(arr: Array<String>, element: String): Array<String>{
-    val mutable = arr.toMutableList()
-    mutable.add(element)
-    return mutable.toTypedArray()
-}
-fun appendCidadeToList(arr: Array<br.iesb.poo.resources.Cidade>, element: br.iesb.poo.resources.Cidade): Array<br.iesb.poo.resources.Cidade>{
-    val mutable = arr.toMutableList()
-    mutable.add(element)
-    return mutable.toTypedArray()
-}
-
-
-fun createCidadeHash(map: HashMap<String, String>): br.iesb.poo.resources.Cidade {
-    val cidade = Cidade(
-        map.get("code")!!.toFloat().toInt(),
-        map.get("date")!!,
-        map.get("name")!!,
-        map.get("state")!!,
-        map.get("cases")!!.toInt(),
-        map.get("deaths")!!.toInt()
+fun createCidadeHash(map: HashMap<String, String>): Cidade {
+    return Cidade(
+        map["code"]!!.toFloat().toInt(),
+        map["name"]!!,
+        map["state"]!!,
+        map["cases"]!!.toInt(),
+        map["deaths"]!!.toInt(),
+        map["date"]!!
     )
-    return cidade
 }
-
-fun read_city_from_file(path: String): Array<br.iesb.poo.resources.Cidade>{
-    var cidades = arrayOf<br.iesb.poo.resources.Cidade>()
-    var firstLine = true
-    var myFile = File(path)
-    var data = HashMap<String, String>()
-    var dataColumns = arrayOf<String>()
-    myFile.forEachLine {
-        if (firstLine) {
-            firstLine = false
-            it.split(",").toTypedArray().forEach {
-                dataColumns = appendStringToList(dataColumns, it)
-            }
-        }else{
-            it.split(",").toTypedArray().forEachIndexed{ idx, element ->
-                data.put(dataColumns[idx], element)
-            }
-            var cidade = createCidadeHash(data)
-            cidades = appendCidadeToList(cidades, cidade)
-        }
-    }
-    return cidades
-}
-
-
-// Instancia objeto de comunicação com o DB
-object Cidade : Table() {
-    val code = integer("code").uniqueIndex()
-    val date = datetime("date")
-    val name = varchar("name", 50)
-    val state = varchar("state", 50)
-    val cases = integer("cases")
-    val deaths = integer("deaths")
-
-    override val primaryKey = PrimaryKey(code, name="PK_CIDADE_ID")
-
-    fun toCidade(row: ResultRow) = Cidade(
-            code = row[Cidade.code],
-            date = row[Cidade.date].toString("yyyy-MM-dd"),
-            name = row[Cidade.name],
-            state = row[Cidade.state],
-            cases = row[Cidade.cases],
-            deaths = row[Cidade.deaths]
-        )
-
-}
-
 
 
 
@@ -103,36 +52,140 @@ fun Application.myapp(){
 
     // Transações iniciais com o DB
     transaction {
+
         // Criação de Schema
-        SchemaUtils.create(Cidade)
+        SchemaUtils.create(CidadeSchema)
 
         // popular DB com cidades
-        val cidades = read_city_from_file("./dataset/cidade.csv")
-        cidades.forEach {
-            val cidade = it
-            Cidade.insert {
-                it[Cidade.code] = cidade.code
-                it[Cidade.date] = DateTime.parse(cidade.date)
-                it[Cidade.name] = cidade.name
-                it[Cidade.state] = cidade.state
-                it[Cidade.cases] = cidade.cases
-                it[Cidade.deaths] = cidade.deaths
+        val cityLoader = CSVLoader("./dataset/cases/cidade.csv")
+        cityLoader.readDataFromFile()
+
+        for (row in 0 until cityLoader.size) {
+            var cityMap = HashMap<String, String>()
+            for (column in cityLoader.columns) {
+                cityMap[column] = cityLoader.data[column]!![row]
+            }
+                val cidade = createCidadeHash(cityMap)
+
+                CidadeSchema.insert {
+                    it[code] = cidade.code
+                    it[name] = cidade.name
+                    it[state] = cidade.state
+                    it[cases] = cidade.cases
+                    it[deaths] = cidade.deaths
+                    it[date] = DateTime.parse(cidade.date)
+            }
+        }
+
+        SchemaUtils.create(UsersSchema)
+
+        val userLoader = CSVLoader("./dataset/users/login.csv")
+        userLoader.readDataFromFile()
+
+        println("\n\n${userLoader.size}")
+
+        for (row in 0 until userLoader.size) {
+            var userMap = HashMap<String, String>()
+            for (column in userLoader.columns) {
+                userMap[column] = userLoader.data[column]!![row]
+            }
+//            val user = createUserHash(userMap)
+            val user = Login(null, null, null, null, null, userMap)
+            UsersSchema.insert {
+                it[email] = user.email!!
+                it[cpf] = user.cpf!!
+                it[password] = user.password!!
+                it[tipo_log] = user.tipo_log!!
+                it[date] = DateTime.parse(user.date)!!
             }
         }
     }
 
-    // Inicialização de rotas da API
-    install(Routing){
-        route("/") {
-            get("/") {
-                val cidade = transaction {
-                    Cidade.selectAll().map { Cidade.toCidade(it) }
-                }
 
-                call.respond(cidade)
+    // Inicialização de rotas da API
+    install(Routing) {
+        get("/") {
+                val html = File("./src/templates/index.html").readText()
+                call.respondText(html, ContentType.Text.Html)
+        }
+
+        get("/login"){
+            val user = transaction {
+                UsersSchema.selectAll().map {
+                UsersSchema.toObject(it)
+                }
             }
 
+            call.respond(user)
         }
+
+
+        post("/login") {
+            val post_login = call.receive<Login>()
+
+            val login_query = transaction {
+                UsersSchema.select {
+                    UsersSchema.email eq post_login.email!! and (UsersSchema.password eq post_login.password!!)
+                }.map {
+                    UsersSchema.toObject(it)
+                }
+            }
+            if (login_query.size == 1){
+                call.respondText("Login Efetuado com sucesso!")
+            }
+            else {
+                call.respondText("Caso não lembre a senha faça um post para \"/mudar_senha\" com seu email e a nova senha")            }
+        }
+
+        post("/mudar_senha") {
+            val post_login = call.receive<Login>()
+            val login_query = transaction {
+                UsersSchema.update ({
+                    UsersSchema.email eq post_login.email!!
+                }) {
+                   it[UsersSchema.password] = post_login.password!!
+
+                }
+            }
+            call.respondText("Senha alterada para ${post_login.password}")
+        }
+
+        post("/informacoes-usuario") {
+            val post_login = call.receive<Login>()
+            val login_query = transaction {
+                UsersSchema.select {
+                    UsersSchema.email eq post_login.email!! and (UsersSchema.password eq post_login.password!!)
+                }.map {
+                    UsersSchema.toObject(it)
+                }
+            }
+            if (login_query.size == 1){
+                call.respond(login_query)
+            }
+            else {
+                call.respondText("Email/Senha Inválidos")            }
+        }
+
+        get("/cidade/top-cases") {
+            val top_cidades = transaction {
+                CidadeSchema.selectAll().orderBy(CidadeSchema.cases to SortOrder.DESC).limit(10).map {
+                    CidadeSchema.toObject(it)
+                }
+            }
+            call.respond(top_cidades)
+        }
+
+
+        get("/cidade/top-deaths") {
+            val top_cidades = transaction {
+                CidadeSchema.selectAll().orderBy(CidadeSchema.deaths to SortOrder.DESC).limit(10).map {
+                    CidadeSchema.toObject(it)
+                }
+            }
+            call.respond(top_cidades)
+        }
+
+
     }
 }
 
