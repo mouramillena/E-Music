@@ -35,7 +35,6 @@ fun createCidadeHash(map: HashMap<String, String>): Cidade {
 }
 
 
-
 // Módulo que possui o corpo da API
 fun Application.myapp(){
 
@@ -68,12 +67,12 @@ fun Application.myapp(){
                 val cidade = createCidadeHash(cityMap)
 
                 CidadeSchema.insert {
-                    it[code] = cidade.code
-                    it[name] = cidade.name
-                    it[state] = cidade.state
-                    it[cases] = cidade.cases
-                    it[deaths] = cidade.deaths
-                    it[date] = DateTime.parse(cidade.date)
+                    it[code] = cidade.code!!
+                    it[name] = cidade.name!!
+                    it[state] = cidade.state!!
+                    it[cases] = cidade.cases!!
+                    it[deaths] = cidade.deaths!!
+                    it[date] = DateTime.parse(cidade.date!!)
             }
         }
 
@@ -101,7 +100,7 @@ fun Application.myapp(){
         }
     }
 
-
+    var login: Login? = null
     // Inicialização de rotas da API
     install(Routing) {
         get("/") {
@@ -109,16 +108,26 @@ fun Application.myapp(){
                 call.respondText(html, ContentType.Text.Html)
         }
 
-        get("/login"){
-            val user = transaction {
-                UsersSchema.selectAll().map {
-                UsersSchema.toObject(it)
-                }
+        get("/all-users"){
+            if (login == null) {
+                call.respondText("Faça login em uma conta de administrador.")
             }
-
-            call.respond(user)
+            if (login!!.tipo_log!! > 1) {
+                val user = transaction {
+                    UsersSchema.selectAll().map {
+                        UsersSchema.toObject(it)
+                    }
+                }
+                call.respond(user)
+            } else {
+                call.respondText("Sem permissão de administrador")
+            }
         }
 
+        get("/logout"){
+            login = null
+            call.respondText("Pode sair do sistema com segurança")
+        }
 
         post("/login") {
             val post_login = call.receive<Login>()
@@ -131,10 +140,38 @@ fun Application.myapp(){
                 }
             }
             if (login_query.size == 1){
+                login = login_query[0]
                 call.respondText("Login Efetuado com sucesso!")
             }
             else {
-                call.respondText("Caso não lembre a senha faça um post para \"/mudar_senha\" com seu email e a nova senha")            }
+                call.respondText("Email/Senha inválidos")            }
+        }
+
+
+        post("/login/cadastro") {
+            val post_login = call.receive<Login>()
+
+            val login_query = transaction {
+                UsersSchema.select {
+                    UsersSchema.email eq post_login.email!!
+                }.map {
+                    UsersSchema.toObject(it)
+                }
+            }
+
+            if (login_query.size == 0) {
+                transaction {
+                    UsersSchema.insert {
+                        it[email] = post_login.email!!
+                        it[cpf] = post_login.cpf!!
+                        it[password] = post_login.password!!
+                        it[tipo_log] = 1
+                        it[date] = DateTime.now()
+                    }
+                }
+                call.respondText("Cadastro Realizado com sucesso")
+                }
+            call.respondText("E-mail já cadastrado.")
         }
 
         post("/mudar_senha") {
@@ -144,7 +181,6 @@ fun Application.myapp(){
                     UsersSchema.email eq post_login.email!!
                 }) {
                    it[UsersSchema.password] = post_login.password!!
-
                 }
             }
             call.respondText("Senha alterada para ${post_login.password}")
@@ -167,22 +203,106 @@ fun Application.myapp(){
         }
 
         get("/cidade/top-cases") {
-            val top_cidades = transaction {
-                CidadeSchema.selectAll().orderBy(CidadeSchema.cases to SortOrder.DESC).limit(10).map {
-                    CidadeSchema.toObject(it)
-                }
+            if (login == null){
+                call.respondText("Faça login primeiro")
             }
-            call.respond(top_cidades)
+            else {
+                val top_cidades = transaction {
+                    CidadeSchema.selectAll().orderBy(CidadeSchema.cases to SortOrder.DESC).limit(10).map {
+                        CidadeSchema.toObject(it)
+                    }
+                }
+                call.respond(top_cidades)
+            }
         }
 
 
         get("/cidade/top-deaths") {
-            val top_cidades = transaction {
-                CidadeSchema.selectAll().orderBy(CidadeSchema.deaths to SortOrder.DESC).limit(10).map {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            } else {
+
+                val top_cidades = transaction {
+                    CidadeSchema.selectAll().orderBy(CidadeSchema.deaths to SortOrder.DESC).limit(10).map {
+                        CidadeSchema.toObject(it)
+                    }
+                }
+                call.respond(top_cidades)
+            }
+        }
+
+        post("/cidade") {
+            val post_cidade = call.receive<Cidade>()
+//            if (login == null) {
+//                call.respondText("Faça login primeiro")
+//            }
+            val cidade_query = transaction {
+                CidadeSchema.select {
+                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
+                }.map {
                     CidadeSchema.toObject(it)
                 }
             }
-            call.respond(top_cidades)
+            if (cidade_query.size == 1){
+                call.respond(cidade_query[0])
+            } else {
+                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
+
+            }
+        }
+
+        post("/cidade/update-cases") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val post_cidade = call.receive<Cidade>()
+            val cidade_query = transaction {
+                CidadeSchema.select {
+                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
+                }.map {
+                    CidadeSchema.toObject(it)
+                }
+            }
+            if (cidade_query.size == 1){
+                cidade_query[0].atualizarCasos(post_cidade.cases)
+                transaction {
+                    CidadeSchema.update({ CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!) }) {
+                        it[cases] = cidade_query[0].cases!!
+                    }
+                }
+                call.respondText("Casos de ${cidade_query[0].name} de ${cidade_query[0].state} atualizado com sucesso")
+            } else {
+                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
+
+            }
+        }
+
+        post("/cidade/update-deaths") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val post_cidade = call.receive<Cidade>()
+            val cidade_query = transaction {
+                CidadeSchema.select {
+                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
+                }.map {
+                    CidadeSchema.toObject(it)
+                }
+            }
+            if (cidade_query.size == 1){
+                cidade_query[0].atualizarCasos(post_cidade.deaths)
+                transaction {
+                    CidadeSchema.update({ CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!) }) {
+                        it[deaths] = cidade_query[0].deaths!!
+                    }
+                }
+                call.respondText("Casos de ${cidade_query[0].name} de ${cidade_query[0].state} atualizado com sucesso")
+            } else {
+                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
+
+            }
         }
 
 

@@ -1,6 +1,7 @@
 package br.iesb.poo.resources.user
 
 import br.iesb.poo.utils.HashMapParser
+import java.time.LocalDate
 
 class Login(
     var email:String?,
@@ -23,6 +24,14 @@ class Login(
     init {
         if (map != null) {
             createFromHash(map)
+        }
+        else {
+            if (this.tipo_log == null) {
+                this.tipo_log = 3
+            }
+            if (this.date == null) {
+                this.date = LocalDate.now().toString()
+            }
         }
     }
 }
