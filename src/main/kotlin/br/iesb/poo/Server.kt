@@ -174,7 +174,7 @@ fun Application.myapp(){
             call.respondText("E-mail já cadastrado.")
         }
 
-        post("/mudar_senha") {
+        post("/mudar-senha") {
             val post_login = call.receive<Login>()
             val login_query = transaction {
                 UsersSchema.update ({
@@ -187,19 +187,12 @@ fun Application.myapp(){
         }
 
         post("/informacoes-usuario") {
-            val post_login = call.receive<Login>()
-            val login_query = transaction {
-                UsersSchema.select {
-                    UsersSchema.email eq post_login.email!! and (UsersSchema.password eq post_login.password!!)
-                }.map {
-                    UsersSchema.toObject(it)
-                }
+            if (login == null){
+                call.respondText("Faça login primeiro")
+            } else {
+                call.respond(login!!)
             }
-            if (login_query.size == 1){
-                call.respond(login_query)
-            }
-            else {
-                call.respondText("Email/Senha Inválidos")            }
+
         }
 
         get("/cidade/top-cases") {
@@ -292,7 +285,7 @@ fun Application.myapp(){
                 }
             }
             if (cidade_query.size == 1){
-                cidade_query[0].atualizarCasos(post_cidade.deaths)
+                cidade_query[0].atualizarMortes(post_cidade.deaths)
                 transaction {
                     CidadeSchema.update({ CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!) }) {
                         it[deaths] = cidade_query[0].deaths!!
