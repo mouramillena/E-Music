@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API COVID19</title>
+</head>
+<body>
+    <h1>Trabalho API de COVID19</h1>
+    <p>Esse trabalho utiliza da implementação de uma API em 
+        Kotlin para manutenção e acompanhamento dos casos de COVID19</p>
+
+    <h2>Como usar</h2>
+    <h3>Login</h3>
+    <p>Essa sessão é referente aos caminhos e métodos para o login:</p>
+    
+    <table style="width:100%">
+        <tr>
+            <th>Motivação</th>
+            <th>Método</th>
+            <th>Caminho</th>
+            <th>Formato</th>
+            <th>Observação</th>
+        </tr>
+        <tr>
+            <td>Realizar o login</td>
+            <td>Post</td>
+            <td>"/login"</td>
+            <td>{<br>
+                "email": "seuemail@server.com",<br>
+                "password": "SUASENHA"<br>
+            }</td>
+            <td>O password padrão é "123456"</td>
+        </tr>
+        <tr>
+            <td>Realizar o logout</td>
+            <td>Get</td>
+            <td>"/logout"</td>
+            <td>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Visualizar os usuários do sistema</td>
+            <td>Get</td>
+            <td>"/all-users"</td>
+            <td>
+            </td>
+            <td>
+                É necessário estar logado em uma conda de administrador
+            </td>
+        </tr>
+        <tr>
+            <td>Trocar a senha</td>
+            <td>Post</td>
+            <td>"/mudar-senha"</td>
+            <td>{<br>
+                "email": "seuemail@server.com",<br>
+                "password": "NOVASENHA"<br>
+            }</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Criar um usuário</td>
+            <td>post</td>
+            <td>"/login/cadastro"</td>
+            <td>{<br>
+                "cpf": "012345678901",<br>
+                "email": "seuemail@server.com",<br>
+                "password": "SUASENHA"<br>
+            }</td>
+            <td>Só cria usuário se não houver usuário com mesmo e-mail préviamente cadastrado</td>
+        </tr>
+        <tr>
+            <td>Acessar suas informações</td>
+            <td>get</td>
+            <td>"/informacoes-usuario"</td>
+            <td>{<br>
+                "email": "seuemail@server.com",<br>
+                "password": "SUASENHA"<br>
+            }</td>
+            <td></td>
+        </tr>
+    </table>
+    
+    
+    <h3>Consultas de Cidade</h3>
+    <p>Essa sessão é referente aos caminhos e métodos para consultas de COVID19 em cidades:</p>
+    <h5>Observação:</h5>
+    <p>As funcionalidades dessa sessão só estão disponíveis após ser realizado o login no sistema</p>
+    
+    <table style="width:100%">
+        <tr>
+            <th>Motivação</th>
+            <th>Método</th>
+            <th>Caminho</th>
+            <th>Formato</th>
+            <th>Observação</th>
+        </tr>
+        <tr>
+            <td>Visualizar as 10 cidades com mais casos</td>
+            <td>Get</td>
+            <td>"/cidade/top-cases"</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Visualizar as 10 cidades com mais mortes</td>
+            <td>Get</td>
+            <td>"/cidade/top-deaths"</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Recuperar informações de determinada cidade</td>
+            <td>Post</td>
+            <td>"/cidade"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+            }</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Atualiza o número de casos de determinada cidade</td>
+            <td>Post</td>
+            <td>"/cidade/update-cases"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "cases": "Int do número de casos a serem acrescentados"<br>
+            }</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Atualiza o número de mortes de determinada cidade</td>
+            <td>Post</td>
+            <td>"/cidade/update-deaths"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "deaths": "Int do número de casos a serem acrescentados"<br>
+            }</td>
+            <td></td>
+        </tr>
+
+    </table>
+    
+</body>
+</html
