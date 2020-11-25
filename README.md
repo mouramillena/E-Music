@@ -1,25 +1,18 @@
 # API COVID-19
 
 ## Descrição:
+
  
-## Autores:
+## Autor:
 ```
 {
-    {
-        "aluno": Diogo Telheiro do Nascimento,
-        "matricula": 1822130029,
-        "github": https://github.com/Diogo364
-    },
+  
     {
         "aluna": Millena Moura dos Santos,
         "matricula": 1812130012,
         "github": https://github.com/mouramillena 
-    },
-    {
-        "aluna": Jéssica Rodrigues da Silva,
-        "matricula": 1422130043,
-        "github": https://github.com/jessicarodriguess
     }
+
 }
 ```
 
@@ -58,7 +51,7 @@ Para construir o banco de dados utilizado nós utilizamos apenas os registros ma
 
 O download da versão utilizada no projeto foi realizado no dia 17/09/2020 às 21:00 horas UTC-3 e estará disponível 
 no Google Drive pelo link a seguir:
-- [Google Drive](https://drive.google.com/drive/folders/1363-UDdvkU1YIVodrydHpHZVbh7cDCjL?usp=sharing)
+- [Google Drive](https://drive.google.com/drive/folders/1gBBZqN3Ffw9QCx7-iz9Qfy5Y62cuRYwZ)
 
 
 > **Observação:** Foi realizado um preprocessamento nos dados utilizando um script próprio, por isso não é possível a atualização da 
