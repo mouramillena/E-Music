@@ -36,7 +36,7 @@ fun createCidadeHash(map: HashMap<String, String>): Cidade {
 
 //FUNCAO REGIAO (INSERIDA)
 fun createRegiaoHash(map: HashMap<String, String>): Regiao {
-    println("OK")
+   //  println("OK")
     return Regiao(
         map["code"]!!.toInt(),
         map["name"]!!,
@@ -101,6 +101,7 @@ fun Application.myapp(){
             for (column in regLoader.columns) {
                 regMap[column] = regLoader.data[column]!![row]
             }
+//            println("\n\n AQUIIIII ${regMap}")
             val regiao = createRegiaoHash(regMap)
 
             RegiaoSchema.insert {
