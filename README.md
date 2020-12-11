@@ -5,7 +5,7 @@
      - Auxiliar na tomada de decisão a cerca do isolamento social;
      - Solucionar a dificuldade de acesso a informações relevantes sobre o avanço da doença;
      - Auxiliar no processo de tomada de decisão dos gerentes da saúde pública, 
-     <br>neste momento atípico de crise na saúde mundial;
+     neste momento atípico de crise na saúde mundial;
 
 
 ## Autor:
