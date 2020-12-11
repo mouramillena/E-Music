@@ -4,7 +4,8 @@
      - Analisar os dados epidemiológicos sobre o avanço do COVID-19;
      - Auxiliar na tomada de decisão a cerca do isolamento social;
      - Solucionar a dificuldade de acesso a informações relevantes sobre o avanço da doença;
-     - Auxiliar no processo de tomada de decisão dos gerentes da saúde pública, neste momento atípico de crise na saúde mundial;
+     - Auxiliar no processo de tomada de decisão dos gerentes da saúde pública, 
+     neste momento atípico de crise na saúde mundial;
 
 
 ## Autor:
