@@ -1,18 +1,20 @@
 # API COVID-19
 
-## Descrição:
+## Objetivo:
+     - Analisar os dados epidemiológicos sobre o avanço do COVID-19;
+     - Auxiliar na tomada de decisão a cerca do isolamento social;
+     - Solucionar a dificuldade de acesso a informações relevantes sobre o avanço da doença;
+     - Auxiliar no processo de tomada de decisão dos gerentes da saúde pública, neste momento atípico de crise na saúde mundial;
 
- 
+
 ## Autor:
 ```
 {
-  
-    {
+      {
         "aluna": Millena Moura dos Santos,
         "matricula": 1812130012,
         "github": https://github.com/mouramillena 
-    }
-
+      }
 }
 ```
 
@@ -54,7 +56,8 @@ no Google Drive pelo link a seguir:
 - [Google Drive](https://drive.google.com/drive/folders/1gBBZqN3Ffw9QCx7-iz9Qfy5Y62cuRYwZ)
 
 
-> **Observação:** Foi realizado um preprocessamento nos dados utilizando um script próprio, por isso não é possível a atualização da 
+> **Observação:** Foi realizado um pre-processamento nos dados utilizando um script próprio, por isso não é possível a atualização da 
 base por enquanto.
+>
 <!-- Para atualização da base de dados basta faça o download no link abaixo: 
 - [Link para Dataset](https://www.kaggle.com/unanimad/corona-virus-brazil) -->
