@@ -5,25 +5,55 @@
     <title>API COVID19</title>
 </head>
 <body>
-    <h1>Trabalho API de COVID19</h1>
+    <h1>Trabalho API de COVID-19</h1>
     <p>Esse trabalho utiliza da implementação de uma API em 
-        Kotlin para manutenção e acompanhamento dos casos de COVID19</p>
+        Kotlin para atualização e acompanhamento dos casos de COVID-19</p>
 
-    <h2>Como usar</h2>
-    <h3>Login</h3>
-    <p>Essa sessão é referente aos caminhos e métodos para o login:</p>
-    
+    <h2>.:: MODO DE USAR ::.</h2>
+    <br><br>
+
+    <h3>:. Níveis de Acesso .:</h3>
+    <p>Sessão referente ao controle dos Níveis de Acesso diponíveis na Aplicação:</p>
     <table style="width:100%">
         <tr>
-            <th>Motivação</th>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Observação de Atuação</th>
+        </tr>
+        <tr>
+            <td>1 -  </td>
+            <td>Administrador</td>
+            <td> Usuário MASTER da Aplicação - Realiza todas as Funções </td>
+        </tr>
+        <tr>
+            <td>2 -  </td>
+            <td>User</td>
+            <td> Usuário com poderes de Alteração e Consulta - Responsável pela atualização das informações da Base de Dados</td>
+        </tr>
+        <tr>
+            <td>3 -  </td>
+            <td>Consultor</td>
+            <td> Usuário com poderes de Consulta - Realiza apenas consultas à Base de Dados</td>
+        </tr>
+    </table>
+    <br><br><br><br>
+
+    <h3>:. Login .:</h3>
+    <p>Sessão referente aos caminhos e métodos para realização do Login:</p>
+    <table style="width:100%">
+        <tr>
+            <th>Descrição</th>
+            <th>Nível de Acesso</th>
             <th>Método</th>
+            <th>Controle de Acesso</th>
             <th>Caminho</th>
-            <th>Formato</th>
+            <th>Formato Padrão</th>
             <th>Observação</th>
         </tr>
         <tr>
-            <td>Realizar o login</td>
-            <td>Post</td>
+            <td>Realizar o Login (P1)</td>
+            <td> Todos os Níveis (1/2/3)</td>
+            <td>POST</td>
             <td>"/login"</td>
             <td>{<br>
                 "email": "seuemail@server.com",<br>
@@ -32,118 +62,267 @@
             <td>O password padrão é "123456"</td>
         </tr>
         <tr>
-            <td>Realizar o logout</td>
-            <td>Get</td>
+            <td>Realizar o Logout (P1)</td>
+            <td>Todos os Níveis (1/2/3)</td>
+            <td>GET</td>
             <td>"/logout"</td>
-            <td>
-            </td>
-            <td></td>
+            <td> ----- </td>
+            <td> ----- </td>
         </tr>
         <tr>
-            <td>Visualizar os usuários do sistema</td>
-            <td>Get</td>
+            <td>Visualizar os usuários cadastrados no sistema (P1)</td>
+            <td>Somente Admin (1)</td>
+            <td>GET</td>
             <td>"/all-users"</td>
             <td>
+                -----
             </td>
             <td>
-                É necessário estar logado em uma conda de administrador
+                É necessário estar logado em uma conta de administrador
             </td>
         </tr>
         <tr>
-            <td>Trocar a senha</td>
-            <td>Post</td>
+            <td>Trocar a senha (P1)</td>
+            <td>Todos os Níveis (1/2/3)</td>
+            <td>POST</td>
             <td>"/mudar-senha"</td>
             <td>{<br>
                 "email": "seuemail@server.com",<br>
                 "password": "NOVASENHA"<br>
             }</td>
-            <td></td>
+            <td>
+                Para trocar a senha do usuário diferente do logado na sessão é necessário ser administrador!
+            </td>
         </tr>
         <tr>
-            <td>Criar um usuário</td>
-            <td>post</td>
+            <td>Criar um usuário (P1)</td>
+            <td>Somente Admin (1)</td>
+            <td>POST</td>
             <td>"/login/cadastro"</td>
             <td>{<br>
                 "cpf": "012345678901",<br>
                 "email": "seuemail@server.com",<br>
                 "password": "SUASENHA"<br>
             }</td>
-            <td>Só cria usuário se não houver usuário com mesmo e-mail préviamente cadastrado</td>
+            <td>Só é possível criar se estiver logado como administrador e só cria usuário se não houver usuário com mesmo e-mail préviamente cadastrado</td>
         </tr>
         <tr>
-            <td>Acessar suas informações</td>
-            <td>get</td>
+            <td>Acessar suas informações (P1)</td>
+            <td>Todos os Níveis (1/2/3)</td>
+            <td>GET</td>
             <td>"/informacoes-usuario"</td>
-            <td>{<br>
-                "email": "seuemail@server.com",<br>
-                "password": "SUASENHA"<br>
-            }</td>
-            <td></td>
+            <td> ----- </td>
+            <td> ----- </td>
+        </tr>
+        <tr>
+            <td>Alterar Privilégios (P2)</td>
+            <td>Somente Admin (1)</td>
+            <td>POST</td>
+            <td>"/mudar-log"</td>
+            <td> {<br>
+                "email": "email@server.com",<br>
+                "tipo_log": 1/2/3 <br>
+                } </td>
+            <td> Promovendo ou Revogando Permissões aos usuários </td>
         </tr>
     </table>
+    <br><br><br><br>
     
     
-    <h3>Consultas de Cidade</h3>
-    <p>Essa sessão é referente aos caminhos e métodos para consultas de COVID19 em cidades:</p>
-    <h5>Observação:</h5>
-    <p>As funcionalidades dessa sessão só estão disponíveis após ser realizado o login no sistema</p>
-    
+    <h3>:. Consultas de Cidade .:</h3>
+    <p>Essa sessão é referente aos caminhos e métodos para consultas de COVID-19 nas cidades:</p>
+    <h5>Observação: As funcionalidades desta sessão só estarão disponíveis após ser realizado o login no sistema </h5>
     <table style="width:100%">
         <tr>
-            <th>Motivação</th>
+            <th>Descrição</th>
+            <th>Nível de Acesso</th>
             <th>Método</th>
             <th>Caminho</th>
             <th>Formato</th>
             <th>Observação</th>
         </tr>
         <tr>
-            <td>Visualizar as 10 cidades com mais casos</td>
-            <td>Get</td>
+            <td>Visualizar as 10 cidades com mais casos (P1)</td>
+            <td>Todos os Níveis (1/2/3)</td>
+            <td>GET</td>
             <td>"/cidade/top-cases"</td>
-            <td></td>
-            <td></td>
+            <td> ---------- </td>
+            <td> ---------- </td>
         </tr>
         <tr>
-            <td>Visualizar as 10 cidades com mais mortes</td>
-            <td>Get</td>
+            <td>Visualizar as 10 cidades com mais mortes (P1)</td>
+            <td>Todos os Níveis (1/2/3)</td>
+            <td>GET</td>
             <td>"/cidade/top-deaths"</td>
-            <td></td>
-            <td></td>
+            <td> ---------- </td>
+            <td> ---------- </td>
         </tr>
         <tr>
-            <td>Recuperar informações de determinada cidade</td>
-            <td>Post</td>
+            <td>Consultar informações de determinada cidade (P1)</td>
+            <td>Todos os Níveis (1/2/3)</td>
+            <td>POST</td>
             <td>"/cidade"</td>
             <td>{<br>
                 "name": "Nome da Cidade",<br>
                 "state": "Sigla do estado a que pertence"<br>
             }</td>
-            <td></td>
+            <td> ---------- </td>
+        </tr>
+    </table>
+    <br><br><br><br>
+
+    <h3>:. Atualizações nas Cidade .:</h3>
+    <p>Essa sessão é referente aos caminhos e métodos para Atualizações nos Casos e Mortes de COVID-19 nas cidades: (Incremento e Decremento)</p>
+    <h5>Observação: As funcionalidades desta sessão só estarão disponíveis após ser realizado o login no sistema </h5>
+    <table style="width:100%">
+        <tr>
+            <th>Descrição</th>
+            <th>Nível de Acesso</th>
+            <th>Método</th>
+            <th>Caminho</th>
+            <th>Formato</th>
+            <th>Observação</th>
         </tr>
         <tr>
-            <td>Atualiza o número de casos de determinada cidade</td>
-            <td>Post</td>
+            <td>Acrescentar o número de casos de determinada cidade (P1)</td>
+            <td>Somente os Níveis (1/2)</td>
+            <td>POST</td>
             <td>"/cidade/update-cases"</td>
             <td>{<br>
                 "name": "Nome da Cidade",<br>
                 "state": "Sigla do estado a que pertence"<br>
                 "cases": "Int do número de casos a serem acrescentados"<br>
-            }</td>
-            <td></td>
+                }</td>
+            <td>- Incremento -</td>
         </tr>
         <tr>
-            <td>Atualiza o número de mortes de determinada cidade</td>
-            <td>Post</td>
+            <td>Acrescentar o número de mortes de determinada cidade (P1) </td>
+            <td>Somente os Níveis (1/2)</td>
+            <td>POST</td>
             <td>"/cidade/update-deaths"</td>
             <td>{<br>
                 "name": "Nome da Cidade",<br>
                 "state": "Sigla do estado a que pertence"<br>
                 "deaths": "Int do número de casos a serem acrescentados"<br>
-            }</td>
-            <td></td>
+                }</td>
+            <td>- Incremento -</td>
         </tr>
-
+        <tr>
+            <td>Decrementar o número de casos de determinada cidade (P2)</td>
+            <td>Somente os Níveis (1/2)</td>
+            <td>POST</td>
+            <td>"/cidade/del-cases"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "deaths": "Int do número de casos a serem decrementados"<br>
+                }</td>
+            <td>- Decremento -</td>
+        </tr>
+        <tr>
+            <td>Decrementar o número de mortes de determinada cidade (P2)</td>
+            <td>Somente os Níveis (1/2)</td>
+            <td>POST</td>
+            <td>"/cidade/del-deaths"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "deaths": "Int do número de casos a serem decrementados"<br>
+                }</td>
+            <td>- Decremento -</td>
+        </tr>
     </table>
-    
+    <br><br><br><br>
+
+    <h3>:. Consultas por Região .:</h3>
+    <p>Essa sessão é referente aos caminhos e métodos para consultas de COVID-19 nas regiões:</p>
+    <h5>Observação: As funcionalidades desta sessão só estarão disponíveis após ser realizado o login no sistema </h5>
+
+    <table style="width:100%">
+        <tr>
+            <th>Descrição</th>
+            <th>Método</th>
+            <th>Caminho</th>
+            <th>Formato</th>
+            <th>Observação</th>
+        </tr>
+        <tr>
+            <td>Consultar as informações de todas as regiões (P2)</td>
+            <td>GET</td>
+            <td>"/cidade/top-deaths"</td>
+            <td> ---------- </td>
+            <td> ---------- </td>
+        </tr>
+        <tr>
+            <td>Consultar informações de determinada região (P2)</td>
+            <td>POST</td>
+            <td>"/cidade"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                }</td>
+            <td> ---------- </td>
+        </tr>
+    </table>
+    <br><br><br><br>
+
+    <h3>:. Atualizações nas Regiões .:</h3>
+    <p>Essa sessão é referente aos caminhos e métodos para Atualizações nos Casos e Mortes de COVID-19 nas regiões: (Incremento e Decremento)</p>
+    <h5>Observação: As funcionalidades desta sessão só estarão disponíveis após ser realizado o login no sistema </h5>
+
+    <table style="width:100%">
+        <tr>
+            <th>Descrição</th>
+            <th>Método</th>
+            <th>Caminho</th>
+            <th>Formato</th>
+            <th>Observação</th>
+        </tr>
+        <tr>
+            <td>Acrescentar o número de casos de determinada região (P2)</td>
+            <td>POST</td>
+            <td>"/cidade/update-cases"</td>
+            <td>{<br>
+                "name": "Nome da Região",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "cases": "Int do número de casos a serem acrescentados"<br>
+                }</td>
+            <td>- Incremento -</td>
+        </tr>
+        <tr>
+            <td>Acrescentar o número de mortes de determinada região (P2) </td>
+            <td>POST</td>
+            <td>"/cidade/update-deaths"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "deaths": "Int do número de casos a serem acrescentados"<br>
+                }</td>
+            <td>- Incremento -</td>
+        </tr>
+        <tr>
+            <td>Decrementar o número de casos de determinada região (P2)</td>
+            <td>POST</td>
+            <td>"/cidade/del-cases"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "deaths": "Int do número de casos a serem decrementados"<br>
+                }</td>
+            <td>- Decremento -</td>
+        </tr>
+        <tr>
+            <td>Decrementar o número de mortes de determinada região (P2)</td>
+            <td>POST</td>
+            <td>"/cidade/del-deaths"</td>
+            <td>{<br>
+                "name": "Nome da Cidade",<br>
+                "state": "Sigla do estado a que pertence"<br>
+                "deaths": "Int do número de casos a serem decrementados"<br>
+                }</td>
+            <td>- Decremento -</td>
+        </tr>
+    </table>
+
 </body>
 </html
