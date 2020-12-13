@@ -125,12 +125,25 @@ instruções descritas
 <br>
 
 ## .: BASE DE DADOS :.
-<p align="justify"> Utilizaremos a base de dados disponibilizada no perfil de <a href="https://www.kaggle.com/leonardopena/top-spotify-songs-from-20102019-by-year/metadata"> Leonardo Henrique </a> no Kaggle.
-<br> Esta base de dados contém 603 itens das TOP músicas do Spotify de 2010-2019.
-<br> O download foi realizado dia 10/12/2020 as 01:30 horário de Brasília e esta disponível no link do <a href="">GOOGLE DRIVE</a>.</p>
+<p align="justify"> Utilizaremos a base de dados disponibilizada no link do <a href="">GOOGLE DRIVE</a>.</p>
 
-https://www.kaggle.com/leonardopena/top-spotify-songs-from-20102019-by-year
-
+<br> Esta base de dados contém <b>4 TABELAS</b>
+```
+musica.csv
+```
+<br>
+```
+artista.csv
+```
+<br>
+```
+genero.csv
+```
+<br>
+```
+album.csv
+```
+<br>
 
 ## .: PROFESSOR RESPONSÁVEL :.
 <p align="justify"> :tophat: <a href="https://github.com/kenniston"> Kenniston </a> </p>
