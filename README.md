@@ -109,9 +109,10 @@ Seu formato deve ficar como abaixo:
             artista.csv
             musica.csv
             album.csv
-			genero.csv
+	    genero.csv
         users/
-            login.csv  
+            login.csv
+	    nivel_acesso.csv
     ```
 
 <br><br>
