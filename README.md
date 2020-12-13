@@ -101,6 +101,7 @@ git checkout master
 
 <b>4ºPASSO.</b> Faça o download dos arquivos da base de dados e a coloque dentro de um diretório chamado `'databases'` como no exemplo abaixo.
 Seu formato deve ficar como abaixo:
+
     ```
     database/
         cases/
@@ -111,7 +112,8 @@ Seu formato deve ficar como abaixo:
         users/
             login.csv  
     ```
-<br>
+
+<br><br>
 <b>5ºPASSO.</b> Abra o arquivo (...) 
 <br>Aperte o <b>Build</b> para construção do projeto, e em seguida <b>Start</b> para a execução do arquivo.
 <br>
