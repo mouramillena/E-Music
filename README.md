@@ -1,4 +1,5 @@
-  <img align="center" width="407"  alt="Logo" src="https://user-images.githubusercontent.com/70728316/102001820-0ab0ed80-3cd5-11eb-94e8-36d99af2fb70.JPG">
+<div align="center">
+<img  width="407"  alt="Logo" src="https://user-images.githubusercontent.com/70728316/102001820-0ab0ed80-3cd5-11eb-94e8-36d99af2fb70.JPG">
 <h2 align="center"> E-Music </h2> 
 <p align="center"> SUA API MUSICAL </p>
 </div>
