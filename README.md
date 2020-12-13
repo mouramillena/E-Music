@@ -74,7 +74,7 @@
 <ul>
    <li><b>LINGUAGEM UTILIZADA:</b> Kotlin </li>
    <li><b>IDE:</b> IntelliJ IDEA (Ambiente de Desenvolvimento Integrado - JetBrains) </li>
-   <li><b>ARMAZENAMENTO DE DADOS:</b> <a href="https://firebase.google.com/"> Firebase Realtime Database </a> </li> 
+   <li><b>ARMAZENAMENTO DE DADOS:</b> Banco H2 </li> 
    <li><b>TESTE DE FUNCIONALIDADES:</b> Postman </li>
 </ul>
 
