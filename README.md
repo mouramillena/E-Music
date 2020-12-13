@@ -11,11 +11,13 @@
 ## Autor:
 ```
 {
-      {
+
+   {
         "aluna": Millena Moura dos Santos,
         "matricula": 1812130012,
         "github": https://github.com/mouramillena 
-      }
+    }
+
 }
 ```
 
