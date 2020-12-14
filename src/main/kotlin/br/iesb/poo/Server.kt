@@ -41,7 +41,7 @@ import java.io.File
 
 
 //FUNCAO ARTISTA
-fun createArtistaHash (map: HashMap<String, String>): Artista {
+fun createArtistaHash(map: HashMap<String, String>): Artista {
     return Artista(
         map["code"]!!.toInt(),
         map["name"]!!,
@@ -51,7 +51,7 @@ fun createArtistaHash (map: HashMap<String, String>): Artista {
 }
 
 //FUNCAO MUSICA
-fun createMusicaHash (map: HashMap<String, String>): Musica {
+fun createMusicaHash(map: HashMap<String, String>): Musica {
     return Musica(
         map["code"]!!.toInt(),
         map["name"]!!,
@@ -532,17 +532,10 @@ fun Application.myapp() {
 
             if (musica_query.size == 0) {
                 transaction {
-                    MusicaSchema.select.map {
-                        it[name] = post_musica.name!!
-                        it[duracao] = post_musica.duracao!!
-                        it[album] = post_musica.album!!
-                        it[artista] = post_musica.artista!!
-                        it[genero] = post_musica.genero!!
-                    }
+                    return call.respondText(musica_query[0])
+                } else {
+                    return call.respondText("ERRO")
                 }
-                return call.respondText(musica_query[0])
-            } else {
-                return call.respondText("ERRO")
             }
         }
 
@@ -564,16 +557,11 @@ fun Application.myapp() {
             if (musica_query.size == 0) {
                 transaction {
                     MusicaSchema.select.map {
-                        it[name] = post_musica.name!!
-                        it[duracao] = post_musica.duracao!!
-                        it[album] = post_musica.album!!
-                        it[artista] = post_musica.artista!!
-                        it[genero] = post_musica.genero!!
-                    }
+                        return call.respondText(musica_query[0])
+                    } else {
+                    return call.respondText("ERRO, Não foi encontrada nenhuma música")
                 }
-                return call.respondText(musica_query[0])
-            } else {
-                return call.respondText("ERRO")
+                }
             }
         }
 
@@ -629,7 +617,7 @@ fun Application.myapp() {
 
             val album_query = transaction {
                 AlbumSchema.select {
-                    AlbumSchema.artista eq post_album.artista!!
+                    AlbumSchema.artista eq post_album.artista!! and (AlbumSchema.name eq post_album.name!!)
                 }.map {
                     AlbumSchema.toObject(it)
                 }
@@ -637,60 +625,52 @@ fun Application.myapp() {
 
             if (album_query.size == 0) {
                 transaction {
-                    AlbumSchema.select.map {
-                        it[name] = post_album.name!!
-                        it[artista] = post_album.artista!!
-                        it[ano] = post_album.ano!!
+                    AlbumSchema.select {
+                        return call.respondText(album_query[0])
+                    } else {
+                    return call.respondText("ERRO")
+                }
+                }
+
+                //LISTAR MUSICA DE ALBUM
+                get("/musica/list-album") {
+                    if (login == null) {
+                        call.respondText("Faça login primeiramente.")
+                    }
+                    val post_musica = call.receive<Musica>()
+
+                    val musica_query = transaction {
+                        MusicaSchema.select {
+                            MusicaSchema.album eq post_musica.album!! and (MusicaSchema.artista eq post_musica.artista!!)
+                        }.map {
+                            MusicaSchema.toObject(it)
+                        }
+                    }
+
+                    if (musica_query.size == 0) {
+                        transaction {
+                            MusicaSchema.select {
+                                return call.respondText(musica_query[0])
+                            } else {
+                            return call.respondText("ERRO")
+                        }
+                        }
+
+
                     }
                 }
-                return call.respondText(album_query[0])
-            } else {
-                return call.respondText("ERRO")
+
             }
         }
-
-        //LISTAR MUSICA DE ALBUM
-        get("/musica/list-album") {
-            if (login == null) {
-                call.respondText("Faça login primeiramente.")
-            }
-            val post_musica = call.receive<Musica>()
-
-            val musica_query = transaction {
-                MusicaSchema.select {
-                    MusicaSchema.album eq post_musica.album!! and (MusicaSchema.artista eq post_musica.artista!!)
-                }.map {
-                    MusicaSchema.toObject(it)
-                }
-            }
-
-            if (musica_query.size == 0) {
-                transaction {
-                    MusicaSchema.select.map {
-                        it[name] = post_musica.name!!
-                        it[duracao] = post_musica.duracao!!
-                        it[artista] = post_musica.artista!!
-                        it[genero] = post_musica.genero!!
-                    }
-                }
-                return call.respondText(musica_query[0])
-            } else {
-                return call.respondText("ERRO")
-            }
-        }
-
-
     }
-}
 
+    fun main() {
 
-fun main() {
-
-    // SUBINDO O SERVER NA PORTA 8080
-    embeddedServer(
-        Netty,
-        watchPaths = listOf("E-Music"),
-        module = Application::myapp,
-        port = 8080
-    ).start(wait = true)
-}
+        // SUBINDO O SERVER NA PORTA 8080
+        embeddedServer(
+            Netty,
+            watchPaths = listOf("E-Music"),
+            module = Application::myapp,
+            port = 8080
+        ).start(wait = true)
+    }
