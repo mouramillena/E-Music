@@ -11,7 +11,30 @@ class Musica(
     var idade: String?) : MundoMusical(code, name), Crud {
 
     override fun insert (): String {
+        val post_musica = call.receive<Musica>()
 
+        val musica_query = transaction {
+            MusicaSchema.select {
+                MusicaSchema.name eq post_musica.name!!
+            }.map {
+                MusicaSchema.toObject(it)
+            }
+        }
+
+        if (musica_query.size == 0) {
+            transaction {
+                MusicaSchema.insert {
+                    it[name] = post_musica.name!!
+                    it[duracao] = post_musica.duracao!!
+                    it[album] = post_musica.album!!
+                    it[artista] = post_musica.artista!!
+                    it[idade] = post_musica.idade!!
+                }
+            }
+            return call.respondText("INSERÇÃO REALIZADA COM SUCESSO!")
+        } else {
+            return call.respondText("ERRO DE INSERÇÃO")
+        }
     }
 
     override fun update (t:T,schema:T){
@@ -35,7 +58,7 @@ class Musica(
                     it[genero] = post_musica.genero!!
                 }
             }
-            return  call.respondText("ATUALIZAÇÃO REALIZADA COM SUCESSO")
+            return  call.respondText("ATUALIZAÇÃO REALIZADA COM SUCESSO!")
         } else {
             return  call.respondText("ERRO DE ATUALIZAÇÃO")
         }
@@ -62,7 +85,7 @@ class Musica(
                     it[genero] = post_musica.genero!!
                 }
             }
-            return  call.respondText("EXCLUSÃO COM SUCESSO")
+            return  call.respondText("EXCLUSÃO COM SUCESSO!")
         } else {
             return  call.respondText("ERRO DE EXCLUSÃO")
         }

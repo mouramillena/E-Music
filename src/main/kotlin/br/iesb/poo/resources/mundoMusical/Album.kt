@@ -7,7 +7,7 @@ class Album(
     var code: Int?,
     var name: String?,
     var artista: Int?,
-    var ano: String? ): MundoMusical(code, name), Crud{
+    var ano: String? ): MundoMusical(code, name), Crud {
 
     override fun insert (): String {
         val post_album = call.receive<Album>()
@@ -28,9 +28,9 @@ class Album(
                     it[ano] = post_album.ano!!
                 }
             }
-            return "SUCESSO"
+            return call.respondText("INSERÇÃO REALIZADA COM SUCESSO!")
         } else {
-            return "DEU ERROOOOO"
+            return call.respondText("ERRO DE INSERÇÃO")
         }
     }
 
@@ -53,7 +53,7 @@ class Album(
                     it[ano] = post_album.ano!!
                     }
             }
-            return  call.respondText("ATUALIZAÇÃO REALIZADA COM SUCESSO")
+            return  call.respondText("ATUALIZAÇÃO REALIZADA COM SUCESSO!")
         } else {
             return  call.respondText("ERRO DE ATUALIZAÇÃO")
         }
@@ -78,7 +78,7 @@ class Album(
                     it[ano] = post_album.ano!!
                 }
             }
-            return  call.respondText("EXCLUSÃO COM SUCESSO")
+            return  call.respondText("EXCLUSÃO COM SUCESSO!")
         } else {
             return  call.respondText("ERRO DE EXCLUSÃO")
         }

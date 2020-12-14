@@ -27,9 +27,9 @@ class Artista(
                     it[idade] = post_artista.idade!!
                 }
             }
-            return "SUCESSO"
+            return call.respondText("INSERÇÃO REALIZADA COM SUCESSO!")
         } else {
-            return "DEU ERROOOOO"
+            return call.respondText("ERRO DE INSERÇÃO")
         }
     }
 
