@@ -2,15 +2,27 @@ package br.iesb.poo.resources.mundoMusical
 
 
 import br.iesb.poo.resources.crud.Crud
+import br.iesb.poo.resources.schemas.AlbumSchema
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.gson.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.transaction
 
-class Album(
-    var code: Int?,
-    var name: String?,
-    var artista: Int?,
-    var ano: String? ): MundoMusical(code, name), Crud {
 
-    override fun insert (): String {
-        val post_album = call.receive<Album>()
+class Album (
+    var code: Int? = null,
+    var name: String? = null,
+    var artista: String? = null,
+    var ano: String? = null): MundoMusical(code, name), Crud {
+
+    override fun insert(t: Any): String {
 
         val album_query = transaction {
             AlbumSchema.select {
@@ -34,7 +46,7 @@ class Album(
         }
     }
 
-    override fun update (t:T,schema:T){
+    override fun update (t:Any,schema:Any){
         val post_album = call.receive<Album>()
 
         val album_query = transaction {
@@ -59,7 +71,7 @@ class Album(
         }
     }
 
-    override fun delete (t:T){
+    override fun delete (t:Any){
         val post_album = call.receive<Album>()
 
         val album_query = transaction {

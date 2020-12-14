@@ -4,8 +4,8 @@ package br.iesb.poo.resources.crud
 
 interface Crud {
 
-    fun insert ():String
-    fun update (t:T,schema:T)
-    fun delete (t:T)
+    fun insert (t:Any):String
+    fun update (t:Any,schema:Any)
+    fun delete (t:Any)
 
 }

@@ -12,6 +12,12 @@ import br.iesb.poo.resources.mundoMusical.MundoMusical
 import br.iesb.poo.resources.schemas.MusicaSchema
 import br.iesb.poo.resources.schemas.ArtistaSchema
 import br.iesb.poo.resources.schemas.AlbumSchema
+import br.iesb.poo.resources.schemas.AlbumSchema.ano
+import br.iesb.poo.resources.schemas.MusicaSchema.album
+import br.iesb.poo.resources.schemas.MusicaSchema.artista
+import br.iesb.poo.resources.schemas.MusicaSchema.duracao
+import br.iesb.poo.resources.schemas.MusicaSchema.genero
+import br.iesb.poo.resources.schemas.MusicaSchema.name
 import br.iesb.poo.resources.schemas.UsersSchema
 
 import br.iesb.poo.resources.user.Login
@@ -26,6 +32,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.h2.store.Page.insert
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -34,16 +41,17 @@ import java.io.File
 
 
 //FUNCAO ARTISTA
-fun createArtistaHash(map: HashMap<String, String>): Artista {
-   return Artista(
+fun createArtistaHash (map: HashMap<String, String>): Artista {
+    return Artista(
         map["code"]!!.toInt(),
         map["name"]!!,
         map["idade"]!!,
         map["sexo"]!!
     )
+}
 
 //FUNCAO MUSICA
-fun createMusicaHash(map: HashMap<String, String>): Musica {
+fun createMusicaHash (map: HashMap<String, String>): Musica {
     return Musica(
         map["code"]!!.toInt(),
         map["name"]!!,
@@ -52,6 +60,7 @@ fun createMusicaHash(map: HashMap<String, String>): Musica {
         map["artista"]!!,
         map["genero"]!!
     )
+}
 
 //FUNCAO ALBUM
 fun createAlbumHash(map: HashMap<String, String>): Album {
@@ -61,10 +70,10 @@ fun createAlbumHash(map: HashMap<String, String>): Album {
         map["artista"]!!,
         map["ano"]!!
     )
-
+}
 
 // MODULO DO CORPO DA API
-fun Application.myapp(){
+fun Application.myapp() {
 
     // INSTALA O CONVERSOR DE OBJETOS PARA JSON PARA O SERVER
     install(ContentNegotiation) {
@@ -92,14 +101,14 @@ fun Application.myapp(){
             for (column in artistaLoader.columns) {
                 artistaMap[column] = artistaLoader.data[column]!![row]
             }
-                val artista = createArtistaHash(artistaMap)
+            val artista = createArtistaHash(artistaMap)
 
-                ArtistaSchema.insert {
-                    it[code] = artista.code!!
-                    it[name] = artista.name!!
-                    it[idade] = artista.idade!!
-                    it[sexo] = artista.sexo!!
-                }
+            ArtistaSchema.insert {
+                it[code] = artista.code!!
+                it[name] = artista.name!!
+                it[idade] = artista.idade!!
+                it[sexo] = artista.sexo!!
+            }
         }
 
         // CRIAÇÃO DO SCHEMA MUSICA
@@ -179,14 +188,14 @@ fun Application.myapp(){
 
     var login: Login? = null
     // INICIALIZAÇÃO DE ROTAS DA API
-     install(Routing) {
+    install(Routing) {
         get("/") {
-                val html = File("./src/templates/index.html").readText()
-                call.respondText(html, ContentType.Text.Html)
+            val html = File("./src/templates/index.html").readText()
+            call.respondText(html, ContentType.Text.Html)
         }
 
         //CONSULTA TODOS USUÁRIOS CADASTRADOS
-        get("/all-users"){
+        get("/all-users") {
             if (login == null) {
                 call.respondText("Faça login em uma conta de administrador.")
             }
@@ -203,7 +212,7 @@ fun Application.myapp(){
         }
 
         //LOGOUT
-        get("/logout"){
+        get("/logout") {
             login = null
             call.respondText("Pode sair do sistema com segurança")
         }
@@ -219,12 +228,12 @@ fun Application.myapp(){
                     UsersSchema.toObject(it)
                 }
             }
-            if (login_query.size == 1){
+            if (login_query.size == 1) {
                 login = login_query[0]
                 call.respondText("Login Efetuado com sucesso!")
+            } else {
+                call.respondText("Email/Senha inválidos")
             }
-            else {
-                call.respondText("Email/Senha inválidos")            }
         }
 
         //INSERINDO NOVO USUÁRIO (SÓ O ADMIN)
@@ -265,10 +274,10 @@ fun Application.myapp(){
         post("/mudar-senha") {
             val post_login = call.receive<Login>()
             val login_query = transaction {
-                UsersSchema.update ({
+                UsersSchema.update({
                     UsersSchema.email eq post_login.email!!
                 }) {
-                   it[UsersSchema.password] = post_login.password!!
+                    it[UsersSchema.password] = post_login.password!!
                 }
             }
             call.respondText("Senha alterada para ${post_login.password}")
@@ -297,7 +306,7 @@ fun Application.myapp(){
 
         //INFO DO USER
         post("/informacoes-usuario") {
-            if (login == null){
+            if (login == null) {
                 call.respondText("Faça login primeiro")
             } else {
                 call.respond(login!!)
@@ -306,375 +315,379 @@ fun Application.myapp(){
         }
 
 
-         //CADASTRO DE MUSICA
-         post("/musica/cadastro") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
+        //CADASTRO DE MUSICA
+        post("/musica/cadastro") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
 
-                 val retorno = Musica.insert()
-                 if (retorno == "SUCESSO"){
-                     call.respondText("Musica Cadatrada com sucesso!")
-                 } else {
-                     call.respondText("Música já cadastrado(a).")
+            val retorno = Musica().insert()
+            if (retorno == "SUCESSO") {
+                call.respondText("Musica Cadatrada com sucesso!")
+            } else {
+                call.respondText("Música já cadastrado(a).")
+            }
+
+        }
+
+        //ALTERAR MUSICA
+        post("/musica/update") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val retorno = Musica().update()
+            if (retorno == "SUCESSO") {
+                call.respondText("Musica Alterada com sucesso!")
+            } else {
+                call.respondText("Música não encontrada.")
+            }
+
+        }
+
+        //REMOVER MUSICA
+        post("/musica/delete") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val retorno = Musica().delete()
+            if (retorno == "SUCESSO") {
+                call.respondText("Música excluída com sucesso!")
+            } else {
+                call.respondText("Músicaa não encontrada.")
+            }
+
+        }
+
+        //CADASTRO DE ARTISTA
+        post("/artista/cadastro") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+            val retorno = Artista().insert()
+            if (retorno == "SUCESSO") {
+                call.respondText("Artista Cadastrado com sucesso!")
+            } else {
+                call.respondText("Artista já cadastrado.")
+            }
+
+        }
+
+        //ALTERAR ARTISTA
+        post("/artista/update") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val retorno = Artista().update()
+            if (retorno == "SUCESSO") {
+                call.respondText("Artista Alterado com sucesso!")
+            } else {
+                call.respondText("Artista não encontrado.")
+            }
+
+        }
+
+
+        //REMOVER ARTISTA
+        post("/artista/delete") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val retorno = Artista().delete()
+            if (retorno == "SUCESSO") {
+                call.respondText("Artista excluído com sucesso!")
+            } else {
+                call.respondText("Artista não encontrado.")
+            }
+
+        }
+
+        //CADASTRAR DE ALBUM
+        post("/album/cadastro") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val post_album = call.receive<Album>()
+            val retorno = Album().insert(post_album)
+
+            if (retorno == "SUCESSO") {
+                call.respondText("Álbum Cadastrado com sucesso!")
+            } else {
+                call.respondText("Álbum já cadastrado.")
+            }
+
+        }
+
+        //ALTERAR ALBUM
+        post("/album/update") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+
+            val retorno = Album().update()
+            if (retorno == "SUCESSO") {
+                call.respondText("Album Alterado com sucesso!")
+            } else {
+                call.respondText("Album não encontrado.")
+            }
+
+        }
+
+        //REMOVER ALBUM
+        post("/album/delete") {
+            if (login == null) {
+                call.respondText("Faça login primeiro")
+            }
+            val retorno = Album().delete()
+            if (retorno == "SUCESSO") {
+                call.respondText("Álbum excluído com sucesso!")
+            } else {
+                call.respondText("Álbum não encontrado.")
+            }
+
+        }
+
+
+        //MOSTRANDO MUSICAS
+        get("/musica/all-musicas") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val musica = transaction {
+                MusicaSchema.selectAll().map {
+                    MusicaSchema.toObject(it)
                 }
-
-         }
-
-         //ALTERAR MUSICA
-         post("/musica/update") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-
-             val retorno = Musica.update()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Musica Alterada com sucesso!")
-             } else {
-                 call.respondText("Música não encontrada.")
-             }
-
-         }
-
-         //REMOVER MUSICA
-         post("/musica/delete") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-
-             val retorno = Musica.delete()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Música excluída com sucesso!")
-             } else {
-                 call.respondText("Músicaa não encontrada.")
-             }
-
-         }
-
-         //CADASTRO DE ARTISTA
-         post("/artista/cadastro") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-             val retorno = Artista.insert()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Artista Cadastrado com sucesso!")
-             } else {
-                 call.respondText("Artista já cadastrado.")
-             }
-
-         }
-
-         //ALTERAR ARTISTA
-         post("/artista/update") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-
-             val retorno = Artista.update()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Artista Alterado com sucesso!")
-             } else {
-                 call.respondText("Artista não encontrado.")
-             }
-
-         }
+            }
+            call.respond(musica)
+        }
 
 
-         //REMOVER ARTISTA
-         post("/artista/delete") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-             val retorno = Artista.delete()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Artista excluído com sucesso!")
-             } else {
-                 call.respondText("Artista não encontrado.")
-             }
-
-         }
-
-         //CADASTRAR DE ALBUM
-         post("/album/cadastro") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-             val retorno = Album.insert()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Álbum Cadastrado com sucesso!")
-             } else {
-                 call.respondText("Álbum já cadastrado.")
-             }
-
-         }
-
-         //ALTERAR ALBUM
-         post("/album/update") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-
-             val retorno = Album.update()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Album Alterado com sucesso!")
-             } else {
-                 call.respondText("Album não encontrado.")
-             }
-
-         }
-
-         //REMOVER ALBUM
-         post("/album/delete") {
-             if (login == null) {
-                 call.respondText("Faça login primeiro")
-             }
-             val retorno = Album.delete()
-             if (retorno == "SUCESSO"){
-                 call.respondText("Álbum excluído com sucesso!")
-             } else {
-                 call.respondText("Álbum não encontrado.")
-             }
-
-         }
+        //MOSTRANDO ARTISTAS
+        get("/artista/all-artistas") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val artista = transaction {
+                ArtistaSchema.selectAll().map {
+                    ArtistaSchema.toObject(it)
+                }
+            }
+            call.respond(artista)
+        }
 
 
-         //MOSTRANDO MUSICAS
-         get("/musica/all-musicas"){
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-                   val musica = transaction {
-                     MusicaSchema.selectAll().map {
-                         MusicaSchema.toObject(it)
-                     }
-                 }
-                 call.respond(musica)
-         }
+        //PESQUISAR MUSICA POR GENERO
+        post("/musica/list-genero") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
 
+            val post_musica = call.receive<Musica>()
 
-         //MOSTRANDO ARTISTAS
-         get("/artista/all-artistas"){
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-             val artista = transaction {
-                 ArtistaSchema.selectAll().map {
-                     ArtistaSchema.toObject(it)
-                 }
-             }
-             call.respond(artista)
-         }
+            val musica_query = transaction {
+                MusicaSchema.select.map {
+                    MusicaSchema.genero eq post_musica.genero!!
+                }.map {
+                    MusicaSchema.toObject(it)
+                }
+            }
 
+            if (musica_query.size == 0) {
+                transaction {
+                    MusicaSchema.select.map {
+                        it[name] = post_musica.name!!
+                        it[duracao] = post_musica.duracao!!
+                        it[album] = post_musica.album!!
+                        it[artista] = post_musica.artista!!
+                        it[genero] = post_musica.genero!!
+                    }
+                }
+                return call.respondText(musica_query[0])
+            } else {
+                return call.respondText("ERRO")
+            }
+        }
 
-         //PESQUISAR MUSICA POR GENERO
-         post("/musica/list-genero") {
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
+        //PESQUISAR MUSICA POR NOME
+        post("/musica/list-nome") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val post_musica = call.receive<Musica>()
 
-             val post_musica = call.receive<Musica>()
+            val musica_query = transaction {
+                MusicaSchema.select {
+                    MusicaSchema.name eq post_musica.name!!
+                }.map {
+                    MusicaSchema.toObject(it)
+                }
+            }
 
-             val musica_query = transaction {
-                 MusicaSchema.select {
-                     MusicaSchema.genero eq post_musica.genero!!
-                 }.map {
-                     MusicaSchema.toObject(it)
-                 }
-             }
+            if (musica_query.size == 0) {
+                transaction {
+                    MusicaSchema.select.map {
+                        it[name] = post_musica.name!!
+                        it[duracao] = post_musica.duracao!!
+                        it[album] = post_musica.album!!
+                        it[artista] = post_musica.artista!!
+                        it[genero] = post_musica.genero!!
+                    }
+                }
+                return call.respondText(musica_query[0])
+            } else {
+                return call.respondText("ERRO")
+            }
+        }
 
-             if (musica_query.size == 0) {
-                 transaction {
-                     MusicaSchema.select {
-                         it[name] = post_musica.name!!
-                         it[duracao] = post_musica.duracao!!
-                         it[album] = post_musica.album!!
-                         it[artista] = post_musica.artista!!
-                         it[genero] = post_musica.genero!!
-                     }
-                 }
-                 return call.respondText(musica_query[0])
-             } else {
-                 return call.respondText("ERRO")
-             }
-         }
+        //PESQUISAR MUSICA POR ARTISTA
+        post("/musica/list-artista") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val post_musica = call.receive<Musica>()
 
-         //PESQUISAR MUSICA POR NOME
-         post("/musica/list-nome") {
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-             val post_musica = call.receive<Musica>()
+            val musica_query = transaction {
+                MusicaSchema.select {
+                    MusicaSchema.artista eq post_musica.artista!!
+                }.map {
+                    MusicaSchema.toObject(it)
+                }
+            }
 
-             val musica_query = transaction {
-                 MusicaSchema.select {
-                     MusicaSchema.name eq post_musica.name!!
-                 }.map {
-                     MusicaSchema.toObject(it)
-                 }
-             }
+            if (musica_query.size == 0) {
+                transaction {
+                    MusicaSchema.select.map {
+                        it[name] = post_musica.name!!
+                        it[duracao] = post_musica.duracao!!
+                        it[album] = post_musica.album!!
+                        it[artista] = post_musica.artista!!
+                        it[genero] = post_musica.genero!!
+                    }
+                }
+                return call.respondText(musica_query[0])
+            } else {
+                return call.respondText("ERRO")
+            }
+        }
 
-             if (musica_query.size == 0) {
-                 transaction {
-                     MusicaSchema.select {
-                         it[name] = post_musica.name!!
-                         it[duracao] = post_musica.duracao!!
-                         it[album] = post_musica.album!!
-                         it[artista] = post_musica.artista!!
-                         it[genero] = post_musica.genero!!
-                     }
-                 }
-                 return call.respondText(musica_query[0])
-             } else {
-                 return call.respondText("ERRO")
-             }
-         }
+        //PESQUISAR ARTISTA
+        post("/artista/pesquisa") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val post_artista = call.receive<Artista>()
 
-         //PESQUISAR MUSICA POR ARTISTA
-         post("/musica/list-artista") {
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-             val post_musica = call.receive<Musica>()
+            val artista_query = transaction {
+                ArtistaSchema.select {
+                    ArtistaSchema.name eq post_artista.name!!
+                }.map {
+                    ArtistaSchema.toObject(it)
+                }
+            }
+            if (artista_query.size == 1) {
+                call.respond(artista_query[0])
+            } else {
+                call.respondText("Artista ${post_artista.name} NÃO encontrado(a).")
 
-             val musica_query = transaction {
-                 MusicaSchema.select {
-                     MusicaSchema.artista eq post_musica.artista!!
-                 }.map {
-                     MusicaSchema.toObject(it)
-                 }
-             }
+            }
+        }
 
-             if (musica_query.size == 0) {
-                 transaction {
-                     MusicaSchema.select {
-                         it[name] = post_musica.name!!
-                         it[duracao] = post_musica.duracao!!
-                         it[album] = post_musica.album!!
-                         it[artista] = post_musica.artista!!
-                         it[genero] = post_musica.genero!!
-                     }
-                 }
-                 return call.respondText(musica_query[0])
-             } else {
-                 return call.respondText("ERRO")
-             }
-         }
+        //PESQUISAR MUSICA
+        post("/musica/pesquisa") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val post_musica = call.receive<Musica>()
 
-         //PESQUISAR ARTISTA
-         post("/artista/pesquisa") {
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-             val post_artista = call.receive<Artista>()
+            val musica_query = transaction {
+                MusicaSchema.select {
+                    MusicaSchema.name eq post_musica.name!! and (MusicaSchema.artista eq post_musica.artista!!)
+                }.map {
+                    MusicaSchema.toObject(it)
+                }
+            }
+            if (musica_query.size == 1) {
+                call.respond(musica_query[0])
+            } else {
+                call.respondText("Música ${post_musica.name} de ${post_musica.artista} NÃO encontrada.")
+            }
+        }
 
-             val artista_query = transaction {
-                 ArtistaSchema.select {
-                     ArtistaSchema.name eq post_artista.name!!
-                 }.map {
-                     ArtistaSchema.toObject(it)
-                 }
-             }
-             if (artista_query.size == 1){
-                 call.respond(artista_query[0])
-             } else {
-                 call.respondText("Artista ${post_artista.name} NÃO encontrado(a).")
+        //LISTAR ALBUM DE ARTISTA
+        post("/album/list-artista") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val post_album = call.receive<Album>()
 
-             }
-         }
+            val album_query = transaction {
+                AlbumSchema.select {
+                    AlbumSchema.artista eq post_album.artista!!
+                }.map {
+                    AlbumSchema.toObject(it)
+                }
+            }
 
-         //PESQUISAR MUSICA
-         post("/musica/pesquisa") {
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-             val post_musica = call.receive<Musica>()
+            if (album_query.size == 0) {
+                transaction {
+                    AlbumSchema.select.map {
+                        it[name] = post_album.name!!
+                        it[artista] = post_album.artista!!
+                        it[ano] = post_album.genero!!
+                    }
+                }
+                return call.respondText(album_query[0])
+            } else {
+                return call.respondText("ERRO")
+            }
+        }
 
-             val musica_query = transaction {
-                 MusicaSchema.select {
-                     MusicaSchema.name eq post_musica.name!! and (MusicaSchema.artista eq post_musica.artista!!)
-                 }.map {
-                     MusicaSchema.toObject(it)
-                 }
-             }
-             if (musica_query.size == 1){
-                 call.respond(musica_query[0])
-             } else {
-                 call.respondText("Música ${post_musica.name} de ${post_musica.artista} NÃO encontrada.")
-             }
-         }
+        //LISTAR MUSICA DE ALBUM
+        get("/musica/list-album") {
+            if (login == null) {
+                call.respondText("Faça login primeiramente.")
+            }
+            val post_musica = call.receive<Musica>()
 
-         //LISTAR ALBUM DE ARTISTA
-         post("/album/list-artista") {
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-             val post_album = call.receive<Album>()
+            val musica_query = transaction {
+                MusicaSchema.select {
+                    MusicaSchema.album eq post_musica.album!! and (MusicaSchema.artista eq post_musica.artista!!)
+                }.map {
+                    MusicaSchema.toObject(it)
+                }
+            }
 
-             val album_query = transaction {
-                 AlbumSchema.select {
-                     AlbumSchema.artista eq post_album.artista!!
-                 }.map {
-                     AlbumSchema.toObject(it)
-                 }
-             }
-
-             if (album_query.size == 0) {
-                 transaction {
-                     AlbumSchema.select {
-                         it[name] = post_album.name!!
-                         it[artista] = post_album.artista!!
-                         it[ano] = post_album.genero!!
-                     }
-                 }
-                 return call.respondText(album_query[0])
-             } else {
-                 return call.respondText("ERRO")
-             }
-         }
-
-         //LISTAR MUSICA DE ALBUM
-         get("/musica/list-album") {
-             if (login == null) {
-                 call.respondText("Faça login primeiramente.")
-             }
-             val post_musica = call.receive<Musica>()
-
-             val musica_query = transaction {
-                 MusicaSchema.select {
-                     MusicaSchema.album eq post_musica.album!! and (MusicaSchema.artista eq post_musica.artista!!)
-                 }.map {
-                     MusicaSchema.toObject(it)
-                 }
-             }
-
-             if (musica_query.size == 0) {
-                 transaction {
-                     MusicaSchema.select {
-                         it[name] = post_musica.name!!
-                         it[duracao] = post_musica.duracao!!
-                         it[artista] = post_musica.artista!!
-                         it[genero] = post_musica.genero!!
-                     }
-                 }
-                 return call.respondText(musica_query[0])
-             } else {
-                 return call.respondText("ERRO")
-             }
-         }
+            if (musica_query.size == 0) {
+                transaction {
+                    MusicaSchema.select.map {
+                        it[name] = post_musica.name!!
+                        it[duracao] = post_musica.duracao!!
+                        it[artista] = post_musica.artista!!
+                        it[genero] = post_musica.genero!!
+                    }
+                }
+                return call.respondText(musica_query[0])
+            } else {
+                return call.respondText("ERRO")
+            }
+        }
 
 
     }
 }
 
 
-fun main(){
+fun main() {
 
     // SUBINDO O SERVER NA PORTA 8080
     embeddedServer(
         Netty,
         watchPaths = listOf("E-Music"),
-        module=Application::myapp,
-        port=8080
+        module = Application::myapp,
+        port = 8080
     ).start(wait = true)
 }
