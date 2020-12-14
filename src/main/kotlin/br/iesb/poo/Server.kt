@@ -320,8 +320,9 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
+            val post_musica = call.receive<Musica>()
 
-            val retorno = Musica().insert()
+            val retorno = Musica().insert(post_musica)
             if (retorno == "SUCESSO") {
                 call.respondText("Musica Cadatrada com sucesso!")
             } else {
@@ -335,8 +336,8 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
-
-            val retorno = Musica().update()
+            val post_musica = call.receive<Musica>()
+            val retorno = Musica().update(post_musica)
             if (retorno == "SUCESSO") {
                 call.respondText("Musica Alterada com sucesso!")
             } else {
@@ -350,8 +351,8 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
-
-            val retorno = Musica().delete()
+            val post_musica = call.receive<Musica>()
+            val retorno = Musica().delete(post_musica)
             if (retorno == "SUCESSO") {
                 call.respondText("Música excluída com sucesso!")
             } else {
@@ -365,7 +366,8 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
-            val retorno = Artista().insert()
+            val post_artista = call.receive<Artista>()
+            val retorno = Artista().insert(post_artista)
             if (retorno == "SUCESSO") {
                 call.respondText("Artista Cadastrado com sucesso!")
             } else {
@@ -379,8 +381,8 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
-
-            val retorno = Artista().update()
+            val post_artista = call.receive<Artista>()
+            val retorno = Artista().update(post_artista)
             if (retorno == "SUCESSO") {
                 call.respondText("Artista Alterado com sucesso!")
             } else {
@@ -395,8 +397,8 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
-
-            val retorno = Artista().delete()
+            val post_artista = call.receive<Artista>()
+            val retorno = Artista().delete(post_artista)
             if (retorno == "SUCESSO") {
                 call.respondText("Artista excluído com sucesso!")
             } else {
@@ -427,8 +429,8 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
-
-            val retorno = Album().update()
+            val post_album = call.receive<Album>()
+            val retorno = Album().update(post_album)
             if (retorno == "SUCESSO") {
                 call.respondText("Album Alterado com sucesso!")
             } else {
@@ -442,7 +444,8 @@ fun Application.myapp() {
             if (login == null) {
                 call.respondText("Faça login primeiro")
             }
-            val retorno = Album().delete()
+            val post_album = call.receive<Album>()
+            val retorno = Album().delete(post_album)
             if (retorno == "SUCESSO") {
                 call.respondText("Álbum excluído com sucesso!")
             } else {
@@ -637,7 +640,7 @@ fun Application.myapp() {
                     AlbumSchema.select.map {
                         it[name] = post_album.name!!
                         it[artista] = post_album.artista!!
-                        it[ano] = post_album.genero!!
+                        it[ano] = post_album.ano!!
                     }
                 }
                 return call.respondText(album_query[0])

@@ -11,8 +11,8 @@ import org.jetbrains.exposed.sql.jodatime.datetime
 object ArtistaSchema : Table(), Schema<Artista> {
     var code = integer("code").uniqueIndex()
     var name = varchar("name", 50)
-    var sexo = integer("sexo")
-    var idade = datetime("idade")
+    var sexo = varchar("sexo", 50)
+    var idade = varchar("idade", 50)
 
     override val primaryKey = PrimaryKey(code, name="PK_ARTISTA_ID")
 

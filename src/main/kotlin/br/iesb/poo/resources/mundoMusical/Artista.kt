@@ -22,8 +22,7 @@ class Artista(
      var idade: String? = null) : MundoMusical(code, name), Crud {
 
     override fun insert (t: Any): String {
-        val post_artista = call.receive<Artista>()
-
+        val post_artista = t as Artista
         val artista_query = transaction {
             ArtistaSchema.select {
                 ArtistaSchema.name eq post_artista.name!!
@@ -40,15 +39,14 @@ class Artista(
                     it[idade] = post_artista.idade!!
                 }
             }
-            return call.respondText("INSERÇÃO REALIZADA COM SUCESSO!")
+            return "SUCESSO"
         } else {
-            return call.respondText("ERRO DE INSERÇÃO")
+            return "ERRO"
         }
     }
 
-    override fun update (t:Any,schema:Any){
-        val post_artista = call.receive<Artista>()
-
+    override fun update (t:Any):String{
+        val post_artista = t as Artista
         val artista_query = transaction {
             ArtistaSchema.select {
                 ArtistaSchema.code eq post_artista.code!!
@@ -65,15 +63,15 @@ class Artista(
                     it[idade] = post_artista.idade!!
                 }
             }
-            return  call.respondText("ATUALIZAÇÃO REALIZADA COM SUCESSO")
+            return "SUCESSO"
         } else {
-            return  call.respondText("ERRO DE ATUALIZAÇÃO")
+            return "ERRO"
         }
     }
 
 
     override fun delete (t:Any){
-        val post_artista = call.receive<Artista>()
+        val post_artista = t as Artista
 
         val artista_query = transaction {
             ArtistaSchema.select {
@@ -85,15 +83,15 @@ class Artista(
 
         if (artista_query.size == 0) {
             transaction {
-                ArtistaSchema.delete {
+                ArtistaSchema.deleteWhere {
                     it[name] = post_artista.name!!
                     it[sexo] = post_artista.sexo!!
                     it[idade] = post_artista.idade!!
                 }
             }
-            return  call.respondText("EXCLUSÃO COM SUCESSO")
+            return "SUCESSO"
         } else {
-            return  call.respondText("ERRO DE EXCLUSÃO")
+            return "ERRO"
         }
     }
 

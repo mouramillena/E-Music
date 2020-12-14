@@ -12,8 +12,8 @@ object MusicaSchema : Table(), Schema<Musica> {
     var code = integer("code").uniqueIndex()
     var name = varchar("name", 50)
     var duracao = varchar("duracao", 10)
-    var album = integer("album")
-    var artista = integer("artista")
+    var album = varchar("album", 50)
+    var artista = varchar("artista", 50)
     var genero = varchar("genero",30)
 
     override val primaryKey = PrimaryKey(code, name="PK_MUSICA_ID")

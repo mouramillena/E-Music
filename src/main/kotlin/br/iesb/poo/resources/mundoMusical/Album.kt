@@ -23,7 +23,7 @@ class Album (
     var ano: String? = null): MundoMusical(code, name), Crud {
 
     override fun insert(t: Any): String {
-
+        val post_album = t as Album
         val album_query = transaction {
             AlbumSchema.select {
                 AlbumSchema.name eq post_album.name!!
@@ -40,15 +40,14 @@ class Album (
                     it[ano] = post_album.ano!!
                 }
             }
-            return call.respondText("INSERÇÃO REALIZADA COM SUCESSO!")
+            return "SUCESSO"
         } else {
-            return call.respondText("ERRO DE INSERÇÃO")
+            return "ERRO"
         }
     }
 
-    override fun update (t:Any,schema:Any){
-        val post_album = call.receive<Album>()
-
+    override fun update (t:Any):String{
+        val post_album = t as Album
         val album_query = transaction {
             AlbumSchema.select {
                 AlbumSchema.code eq post_album.code!!
@@ -65,14 +64,14 @@ class Album (
                     it[ano] = post_album.ano!!
                     }
             }
-            return  call.respondText("ATUALIZAÇÃO REALIZADA COM SUCESSO!")
+            return "SUCESSO"
         } else {
-            return  call.respondText("ERRO DE ATUALIZAÇÃO")
+            return "ERRO"
         }
     }
 
     override fun delete (t:Any){
-        val post_album = call.receive<Album>()
+        val post_album = t as Album
 
         val album_query = transaction {
             AlbumSchema.select {
@@ -84,15 +83,15 @@ class Album (
 
         if (album_query.size == 0) {
             transaction {
-                AlbumSchema.delete {
+                AlbumSchema.deleteWhere {
                     it[name] = post_album.name!!
                     it[artista] = post_album.artista!!
                     it[ano] = post_album.ano!!
                 }
             }
-            return  call.respondText("EXCLUSÃO COM SUCESSO!")
+            return "SUCESSO!"
         } else {
-            return  call.respondText("ERRO DE EXCLUSÃO")
+            return "ERRO"
         }
     }
 

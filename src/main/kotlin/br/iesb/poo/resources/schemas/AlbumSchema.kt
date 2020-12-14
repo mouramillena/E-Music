@@ -12,7 +12,7 @@ object AlbumSchema : Table(), Schema<Album> {
     var code = integer("code").uniqueIndex()
     var name = varchar("name", 50)
     var artista = varchar("artista", 50)
-    var ano = integer("ano")
+    var ano = varchar("ano", 30)
 
 
     override val primaryKey = PrimaryKey(code, name="PK_ALBUM_ID")
@@ -21,7 +21,7 @@ object AlbumSchema : Table(), Schema<Album> {
         code = row[code],
         name = row[name],
         artista = row[artista],
-        ano = row[ano].toString("yyyy-MM-dd")
+        ano = row[ano]
     )
 
 }

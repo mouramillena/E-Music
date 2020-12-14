@@ -15,17 +15,17 @@ import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class Musica (
+class Musica(
     var code: Int? = null,
     var name: String? = null,
     var duracao: String? = null,
     var album: String? = null,
     var artista: String? = null,
-    var idade: String? = null) : MundoMusical(code, name), Crud {
+    var genero: String? = null
+) : MundoMusical(code, name), Crud {
 
-    override fun insert (t: Any): String {
-        val post_musica = call.receive<Musica>()
-
+    override fun insert(t: Any): String {
+        val post_musica = t as Musica
         val musica_query = transaction {
             MusicaSchema.select {
                 MusicaSchema.name eq post_musica.name!!
@@ -34,25 +34,24 @@ class Musica (
             }
         }
 
-        if (musica_query.size == 0) {
+        if (musica_query.isEmpty()) {
             transaction {
                 MusicaSchema.insert {
                     it[name] = post_musica.name!!
                     it[duracao] = post_musica.duracao!!
                     it[album] = post_musica.album!!
                     it[artista] = post_musica.artista!!
-                    it[idade] = post_musica.idade!!
+                    it[genero] = post_musica.genero!!
                 }
             }
-            return call.respondText("INSERÇÃO REALIZADA COM SUCESSO!")
+            return "SUCESSO"
         } else {
-            return call.respondText("ERRO DE INSERÇÃO")
+          return "ERRO"
         }
     }
 
-    override fun update (t:Any,schema:Any){
-        val post_musica = call.receive<Musica>()
-
+    override fun update(t: Any):String {
+        val post_musica = t as Musica
         val musica_query = transaction {
             MusicaSchema.select {
                 MusicaSchema.code eq post_musica.code!!
@@ -71,14 +70,14 @@ class Musica (
                     it[genero] = post_musica.genero!!
                 }
             }
-            return  call.respondText("ATUALIZAÇÃO REALIZADA COM SUCESSO!")
+            return "SUCESSO"
         } else {
-            return  call.respondText("ERRO DE ATUALIZAÇÃO")
+            return "ERRO"
         }
     }
 
-    override fun delete (t:Any){
-        val post_musica = call.receive<Musica>()
+    override fun delete(t: Any):String {
+        val post_musica = t as Musica
 
         val musica_query = transaction {
             MusicaSchema.select {
@@ -90,17 +89,19 @@ class Musica (
 
         if (musica_query.size == 0) {
             transaction {
-                MusicaSchema.delete {
-                    it[name] = post_musica.name!!
-                    it[duracao] = post_musica.duracao!!
-                    it[album] = post_musica.album!!
-                    it[artista] = post_musica.artista!!
-                    it[genero] = post_musica.genero!!
-                }
+                MusicaSchema.deleteWhere {
+                    MusicaSchema.name eq post_musica.name!! and (MusicaSchema.artista eq post_musica.artista!!)
+                }.map {
+                        it[name] = post_musica.name!!
+                        it[duracao] = post_musica.duracao!!
+                        it[album] = post_musica.album!!
+                        it[artista] = post_musica.artista!!
+                        it[genero] = post_musica.genero!!
+                    }
             }
-            return  call.respondText("EXCLUSÃO COM SUCESSO!")
+            return "SUCESSO"
         } else {
-            return  call.respondText("ERRO DE EXCLUSÃO")
+            return "ERRO"
         }
     }
 }
