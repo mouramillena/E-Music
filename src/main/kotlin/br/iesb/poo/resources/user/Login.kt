@@ -27,7 +27,7 @@ class Login(
         }
         else {
             if (this.tipo_log == null) {
-                this.tipo_log = 3
+                this.tipo_log = 1
             }
             if (this.date == null) {
                 this.date = LocalDate.now().toString()

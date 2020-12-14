@@ -67,7 +67,8 @@
 </ul>
 </p>
 
-<p align="justify"><b> :warning: &nbsp;&nbsp; Observação:</b> Temos cadastrado apenas o usuário <b>CONSULTOR</b> e sua senha é <b>123456</b>.</p>
+<p align="justify"><b> :warning: &nbsp;&nbsp; Observação:</b> Para realizar o cadastro o usuário deverá inserir seu email <b>(nome@gmail.com)</b> e senha <b>(123456)</b>
+	<br> Temos cadastrados os usuários <b>kenniston</b> e <b>millena</b>.</p>
 <br><br>
 
 ## .: FERRAMENTAS UTILIZADAS :.
@@ -130,6 +131,7 @@ instruções descritas
 <p align="justify"> Utilizaremos a base de dados disponibilizada no link do <a href="https://drive.google.com/drive/folders/1OfR3AooJ7tN007kLtx9ve4AC5xG9gPx_">GOOGLE DRIVE</a>.</p>
 
 <br> Esta base de dados contém <b>4 TABELAS</b>
+
 ```
 musica.csv
 ```

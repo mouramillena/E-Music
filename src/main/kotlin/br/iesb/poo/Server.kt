@@ -1,11 +1,21 @@
 package br.iesb.poo
+
 import br.iesb.poo.loaders.CSVLoader
-import br.iesb.poo.resources.entesFederativos.Cidade
-import br.iesb.poo.resources.entesFederativos.Regiao
-import br.iesb.poo.resources.schemas.CidadeSchema
-import br.iesb.poo.resources.schemas.RegiaoSchema
+
+import br.iesb.poo.resources.crud.Crud
+
+import br.iesb.poo.resources.mundoMusical.Musica
+import br.iesb.poo.resources.mundoMusical.Artista
+import br.iesb.poo.resources.mundoMusical.Album
+import br.iesb.poo.resources.mundoMusical.MundoMusical
+
+import br.iesb.poo.resources.schemas.MusicaSchema
+import br.iesb.poo.resources.schemas.ArtistaSchema
+import br.iesb.poo.resources.schemas.AlbumSchema
 import br.iesb.poo.resources.schemas.UsersSchema
+
 import br.iesb.poo.resources.user.Login
+
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
@@ -22,34 +32,41 @@ import org.joda.time.DateTime
 
 import java.io.File
 
-// FUNCAO CIDADE
-fun createCidadeHash(map: HashMap<String, String>): Cidade {
-    return Cidade(
-        map["code"]!!.toFloat().toInt(),
-        map["name"]!!,
-        map["state"]!!,
-        map["cases"]!!.toInt(),
-        map["deaths"]!!.toInt(),
-        map["date"]!!
-    )
-}
 
-//FUNCAO REGIAO (INSERIDA)
-fun createRegiaoHash(map: HashMap<String, String>): Regiao {
-   //  println("OK")
-    return Regiao(
+//FUNCAO ARTISTA
+fun createArtistaHash(map: HashMap<String, String>): Artista {
+   return Artista(
         map["code"]!!.toInt(),
         map["name"]!!,
-        map["cases"]!!.toInt(),
-        map["deaths"]!!.toInt(),
-        map["date"]!!
+        map["idade"]!!,
+        map["sexo"]!!
     )
-}
 
-// Módulo que possui o corpo da API
+//FUNCAO MUSICA
+fun createMusicaHash(map: HashMap<String, String>): Musica {
+    return Musica(
+        map["code"]!!.toInt(),
+        map["name"]!!,
+        map["duracao"]!!,
+        map["album"]!!,
+        map["artista"]!!,
+        map["genero"]!!
+    )
+
+//FUNCAO ALBUM
+fun createAlbumHash(map: HashMap<String, String>): Album {
+    return Album(
+        map["code"]!!.toInt(),
+        map["name"]!!,
+        map["artista"]!!,
+        map["ano"]!!
+    )
+
+
+// MODULO DO CORPO DA API
 fun Application.myapp(){
 
-    // Instala o conversor de objetos para JSON para o server
+    // INSTALA O CONVERSOR DE OBJETOS PARA JSON PARA O SERVER
     install(ContentNegotiation) {
         gson {
             setPrettyPrinting()
@@ -63,57 +80,75 @@ fun Application.myapp(){
     // TRANSAÇÕES INICIAIS COM O DB
     transaction {
 
-        // CRIAÇÃO DO SCHEMA CIDADE
-        SchemaUtils.create(CidadeSchema)
+        // CRIAÇÃO DO SCHEMA ARTISTA
+        SchemaUtils.create(ArtistaSchema)
 
-        // POPULAR DB COM CIDADES
-        val cityLoader = CSVLoader("./dataset/cases/cidade.csv")
-        cityLoader.readDataFromFile()
+        // POPULAR DB COM ARTISTAS
+        val artistaLoader = CSVLoader("./dataset/cases/artista.csv")
+        artistaLoader.readDataFromFile()
 
-        for (row in 0 until cityLoader.size) {
-            var cityMap = HashMap<String, String>()
-            for (column in cityLoader.columns) {
-                cityMap[column] = cityLoader.data[column]!![row]
+        for (row in 0 until artistaLoader.size) {
+            var artistaMap = HashMap<String, String>()
+            for (column in artistaLoader.columns) {
+                artistaMap[column] = artistaLoader.data[column]!![row]
             }
-                val cidade = createCidadeHash(cityMap)
+                val artista = createArtistaHash(artistaMap)
 
-                CidadeSchema.insert {
-                    it[code] = cidade.code!!
-                    it[name] = cidade.name!!
-                    it[state] = cidade.state!!
-                    it[cases] = cidade.cases!!
-                    it[deaths] = cidade.deaths!!
-                    it[date] = DateTime.parse(cidade.date!!)
+                ArtistaSchema.insert {
+                    it[code] = artista.code!!
+                    it[name] = artista.name!!
+                    it[idade] = artista.idade!!
+                    it[sexo] = artista.sexo!!
+                }
+        }
+
+        // CRIAÇÃO DO SCHEMA MUSICA
+        SchemaUtils.create(MusicaSchema)
+
+        // POPULAR DB COM MUSICAS
+        val musicaLoader = CSVLoader("./dataset/cases/musica.csv")
+        musicaLoader.readDataFromFile()
+
+        for (row in 0 until musicaLoader.size) {
+            var musicaMap = HashMap<String, String>()
+            for (column in musicaLoader.columns) {
+                musicaMap[column] = musicaLoader.data[column]!![row]
+            }
+//            println("\n\n AQUIIIII ${musicaMap}") - TESTANDO
+            val musica = createMusicaHash(musicaMap)
+
+            MusicaSchema.insert {
+                it[code] = musica.code!!
+                it[name] = musica.name!!
+                it[duracao] = musica.duracao!!
+                it[album] = musica.album!!
+                it[artista] = musica.artista!!
+                it[genero] = musica.genero!!
             }
         }
 
-        //INICIO INSERT REGIAO
+        // CRIAÇÃO DO SCHEMA ALBUM
+        SchemaUtils.create(AlbumSchema)
 
-        // CRIAÇÃO DO SCHEMA REGIAO
-        SchemaUtils.create(RegiaoSchema)
+        // POPULAR DB COM ALBUNS
+        val albumLoader = CSVLoader("./dataset/cases/album.csv")
+        albumLoader.readDataFromFile()
 
-        // POPULAR DB COM REGIOES
-        val regLoader = CSVLoader("./dataset/cases/regiao.csv")
-        regLoader.readDataFromFile()
-
-        for (row in 0 until regLoader.size) {
-            var regMap = HashMap<String, String>()
-            for (column in regLoader.columns) {
-                regMap[column] = regLoader.data[column]!![row]
+        for (row in 0 until albumLoader.size) {
+            var albumMap = HashMap<String, String>()
+            for (column in albumLoader.columns) {
+                albumMap[column] = albumLoader.data[column]!![row]
             }
-//            println("\n\n AQUIIIII ${regMap}")
-            val regiao = createRegiaoHash(regMap)
+//            println("\n\n AQUIIIII ${albumMap}") - TESTANDO
+            val album = createAlbumHash(albumMap)
 
-            RegiaoSchema.insert {
-                it[code] = regiao.code!!
-                it[name] = regiao.name!!
-                it[cases] = regiao.cases!!
-                it[deaths] = regiao.deaths!!
-                it[date] = DateTime.parse(regiao.date!!)
+            AlbumSchema.insert {
+                it[code] = album.code!!
+                it[name] = album.name!!
+                it[artista] = album.artista!!
+                it[ano] = album.ano!!
             }
         }
-        //FINAL INSERT REGIAO
-
 
         //CRIAÇÃO DO SCHEMA USERS
         SchemaUtils.create(UsersSchema)
@@ -260,7 +295,7 @@ fun Application.myapp(){
             }
         }
 
-
+        //INFO DO USER
         post("/informacoes-usuario") {
             if (login == null){
                 call.respondText("Faça login primeiro")
@@ -270,165 +305,364 @@ fun Application.myapp(){
 
         }
 
-        get("/cidade/top-cases") {
-            if (login == null){
-                call.respondText("Faça login primeiro")
-            }
-            else {
-                val top_cidades = transaction {
-                    CidadeSchema.selectAll().orderBy(CidadeSchema.cases to SortOrder.DESC).limit(10).map {
-                        CidadeSchema.toObject(it)
-                    }
+
+         //CADASTRO DE MUSICA
+         post("/musica/cadastro") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+
+                 val retorno = Musica.insert()
+                 if (retorno == "SUCESSO"){
+                     call.respondText("Musica Cadatrada com sucesso!")
+                 } else {
+                     call.respondText("Música já cadastrado(a).")
                 }
-                call.respond(top_cidades)
-            }
-        }
+
+         }
+
+         //ALTERAR MUSICA
+         post("/musica/update") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+
+             val retorno = Musica.update()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Musica Alterada com sucesso!")
+             } else {
+                 call.respondText("Música não encontrada.")
+             }
+
+         }
+
+         //REMOVER MUSICA
+         post("/musica/delete") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+
+             val retorno = Musica.delete()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Música excluída com sucesso!")
+             } else {
+                 call.respondText("Músicaa não encontrada.")
+             }
+
+         }
+
+         //CADASTRO DE ARTISTA
+         post("/artista/cadastro") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+             val retorno = Artista.insert()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Artista Cadastrado com sucesso!")
+             } else {
+                 call.respondText("Artista já cadastrado.")
+             }
+
+         }
+
+         //ALTERAR ARTISTA
+         post("/artista/update") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+
+             val retorno = Artista.update()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Artista Alterado com sucesso!")
+             } else {
+                 call.respondText("Artista não encontrado.")
+             }
+
+         }
 
 
-        get("/cidade/top-deaths") {
-            if (login == null) {
-                call.respondText("Faça login primeiro")
-            } else {
+         //REMOVER ARTISTA
+         post("/artista/delete") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+             val retorno = Artista.delete()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Artista excluído com sucesso!")
+             } else {
+                 call.respondText("Artista não encontrado.")
+             }
 
-                val top_cidades = transaction {
-                    CidadeSchema.selectAll().orderBy(CidadeSchema.deaths to SortOrder.DESC).limit(10).map {
-                        CidadeSchema.toObject(it)
-                    }
-                }
-                call.respond(top_cidades)
-            }
-        }
+         }
 
-        post("/cidade") {
-            val post_cidade = call.receive<Cidade>()
-//            if (login == null) {
-//                call.respondText("Faça login primeiro")
-//            }
-            val cidade_query = transaction {
-                CidadeSchema.select {
-                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
-                }.map {
-                    CidadeSchema.toObject(it)
-                }
-            }
-            if (cidade_query.size == 1){
-                call.respond(cidade_query[0])
-            } else {
-                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
+         //CADASTRAR DE ALBUM
+         post("/album/cadastro") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+             val retorno = Album.insert()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Álbum Cadastrado com sucesso!")
+             } else {
+                 call.respondText("Álbum já cadastrado.")
+             }
 
-            }
-        }
+         }
 
-        post("/cidade/update-cases") {
-            if (login == null) {
-                call.respondText("Faça login primeiro")
-            }
+         //ALTERAR ALBUM
+         post("/album/update") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
 
-            val post_cidade = call.receive<Cidade>()
-            val cidade_query = transaction {
-                CidadeSchema.select {
-                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
-                }.map {
-                    CidadeSchema.toObject(it)
-                }
-            }
-            if (cidade_query.size == 1){
-                cidade_query[0].atualizarCasos(post_cidade.cases)
-                transaction {
-                    CidadeSchema.update({ CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!) }) {
-                        it[cases] = cidade_query[0].cases!!
-                    }
-                }
-                call.respondText("Casos de ${cidade_query[0].name} de ${cidade_query[0].state} atualizado com sucesso")
-            } else {
-                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
+             val retorno = Album.update()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Album Alterado com sucesso!")
+             } else {
+                 call.respondText("Album não encontrado.")
+             }
 
-            }
-        }
+         }
 
-        post("/cidade/update-deaths") {
-            if (login == null) {
-                call.respondText("Faça login primeiro")
-            }
+         //REMOVER ALBUM
+         post("/album/delete") {
+             if (login == null) {
+                 call.respondText("Faça login primeiro")
+             }
+             val retorno = Album.delete()
+             if (retorno == "SUCESSO"){
+                 call.respondText("Álbum excluído com sucesso!")
+             } else {
+                 call.respondText("Álbum não encontrado.")
+             }
 
-            val post_cidade = call.receive<Cidade>()
-            val cidade_query = transaction {
-                CidadeSchema.select {
-                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
-                }.map {
-                    CidadeSchema.toObject(it)
-                }
-            }
-            if (cidade_query.size == 1){
-                cidade_query[0].atualizarMortes(post_cidade.deaths)
-                transaction {
-                    CidadeSchema.update({ CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!) }) {
-                        it[deaths] = cidade_query[0].deaths!!
-                    }
-                }
-                call.respondText("Casos de ${cidade_query[0].name} de ${cidade_query[0].state} atualizado com sucesso")
-            } else {
-                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
+         }
 
-            }
-        }
 
-        //DECREMENTA CASOS
-        post("/cidade/del-cases") {
-            if (login == null) {
-                call.respondText("Faça login primeiro")
-            }
+         //MOSTRANDO MUSICAS
+         get("/musica/all-musicas"){
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+                   val musica = transaction {
+                     MusicaSchema.selectAll().map {
+                         MusicaSchema.toObject(it)
+                     }
+                 }
+                 call.respond(musica)
+         }
 
-            val post_cidade = call.receive<Cidade>()
-            val cidade_query = transaction {
-                CidadeSchema.select {
-                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
-                }.map {
-                    CidadeSchema.toObject(it)
-                }
-            }
-            if (cidade_query.size == 1){
-                cidade_query[0].decrementaCasos(post_cidade.cases)
-                transaction {
-                    CidadeSchema.update({ CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!) }) {
-                        it[cases] = cidade_query[0].cases!!
-                    }
-                }
-                call.respondText("Casos de ${cidade_query[0].name} de ${cidade_query[0].state} atualizado com sucesso")
-            } else {
-                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
 
-            }
-        }
+         //MOSTRANDO ARTISTAS
+         get("/artista/all-artistas"){
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+             val artista = transaction {
+                 ArtistaSchema.selectAll().map {
+                     ArtistaSchema.toObject(it)
+                 }
+             }
+             call.respond(artista)
+         }
 
-        //DECREMENTA MORTES
-        post("/cidade/del-deaths") {
-            if (login == null) {
-                call.respondText("Faça login primeiro")
-            }
 
-            val post_cidade = call.receive<Cidade>()
-            val cidade_query = transaction {
-                CidadeSchema.select {
-                    CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!)
-                }.map {
-                    CidadeSchema.toObject(it)
-                }
-            }
-            if (cidade_query.size == 1){
-                cidade_query[0].decrementaMortes(post_cidade.deaths)
-                transaction {
-                    CidadeSchema.update({ CidadeSchema.name eq post_cidade.name!! and (CidadeSchema.state eq post_cidade.state!!) }) {
-                        it[deaths] = cidade_query[0].deaths!!
-                    }
-                }
-                call.respondText("Casos de ${cidade_query[0].name} de ${cidade_query[0].state} atualizado com sucesso")
-            } else {
-                call.respondText("Cidade ${post_cidade.name} de ${post_cidade.state} NÃO encontrada.")
+         //PESQUISAR MUSICA POR GENERO
+         post("/musica/list-genero") {
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
 
-            }
-        }
-        
+             val post_musica = call.receive<Musica>()
+
+             val musica_query = transaction {
+                 MusicaSchema.select {
+                     MusicaSchema.genero eq post_musica.genero!!
+                 }.map {
+                     MusicaSchema.toObject(it)
+                 }
+             }
+
+             if (musica_query.size == 0) {
+                 transaction {
+                     MusicaSchema.select {
+                         it[name] = post_musica.name!!
+                         it[duracao] = post_musica.duracao!!
+                         it[album] = post_musica.album!!
+                         it[artista] = post_musica.artista!!
+                         it[genero] = post_musica.genero!!
+                     }
+                 }
+                 return call.respondText(musica_query[0])
+             } else {
+                 return call.respondText("ERRO")
+             }
+         }
+
+         //PESQUISAR MUSICA POR NOME
+         post("/musica/list-nome") {
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+             val post_musica = call.receive<Musica>()
+
+             val musica_query = transaction {
+                 MusicaSchema.select {
+                     MusicaSchema.name eq post_musica.name!!
+                 }.map {
+                     MusicaSchema.toObject(it)
+                 }
+             }
+
+             if (musica_query.size == 0) {
+                 transaction {
+                     MusicaSchema.select {
+                         it[name] = post_musica.name!!
+                         it[duracao] = post_musica.duracao!!
+                         it[album] = post_musica.album!!
+                         it[artista] = post_musica.artista!!
+                         it[genero] = post_musica.genero!!
+                     }
+                 }
+                 return call.respondText(musica_query[0])
+             } else {
+                 return call.respondText("ERRO")
+             }
+         }
+
+         //PESQUISAR MUSICA POR ARTISTA
+         post("/musica/list-artista") {
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+             val post_musica = call.receive<Musica>()
+
+             val musica_query = transaction {
+                 MusicaSchema.select {
+                     MusicaSchema.artista eq post_musica.artista!!
+                 }.map {
+                     MusicaSchema.toObject(it)
+                 }
+             }
+
+             if (musica_query.size == 0) {
+                 transaction {
+                     MusicaSchema.select {
+                         it[name] = post_musica.name!!
+                         it[duracao] = post_musica.duracao!!
+                         it[album] = post_musica.album!!
+                         it[artista] = post_musica.artista!!
+                         it[genero] = post_musica.genero!!
+                     }
+                 }
+                 return call.respondText(musica_query[0])
+             } else {
+                 return call.respondText("ERRO")
+             }
+         }
+
+         //PESQUISAR ARTISTA
+         post("/artista/pesquisa") {
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+             val post_artista = call.receive<Artista>()
+
+             val artista_query = transaction {
+                 ArtistaSchema.select {
+                     ArtistaSchema.name eq post_artista.name!!
+                 }.map {
+                     ArtistaSchema.toObject(it)
+                 }
+             }
+             if (artista_query.size == 1){
+                 call.respond(artista_query[0])
+             } else {
+                 call.respondText("Artista ${post_artista.name} NÃO encontrado(a).")
+
+             }
+         }
+
+         //PESQUISAR MUSICA
+         post("/musica/pesquisa") {
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+             val post_musica = call.receive<Musica>()
+
+             val musica_query = transaction {
+                 MusicaSchema.select {
+                     MusicaSchema.name eq post_musica.name!! and (MusicaSchema.artista eq post_musica.artista!!)
+                 }.map {
+                     MusicaSchema.toObject(it)
+                 }
+             }
+             if (musica_query.size == 1){
+                 call.respond(musica_query[0])
+             } else {
+                 call.respondText("Música ${post_musica.name} de ${post_musica.artista} NÃO encontrada.")
+             }
+         }
+
+         //LISTAR ALBUM DE ARTISTA
+         post("/album/list-artista") {
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+             val post_album = call.receive<Album>()
+
+             val album_query = transaction {
+                 AlbumSchema.select {
+                     AlbumSchema.artista eq post_album.artista!!
+                 }.map {
+                     AlbumSchema.toObject(it)
+                 }
+             }
+
+             if (album_query.size == 0) {
+                 transaction {
+                     AlbumSchema.select {
+                         it[name] = post_album.name!!
+                         it[artista] = post_album.artista!!
+                         it[ano] = post_album.genero!!
+                     }
+                 }
+                 return call.respondText(album_query[0])
+             } else {
+                 return call.respondText("ERRO")
+             }
+         }
+
+         //LISTAR MUSICA DE ALBUM
+         get("/musica/list-album") {
+             if (login == null) {
+                 call.respondText("Faça login primeiramente.")
+             }
+             val post_musica = call.receive<Musica>()
+
+             val musica_query = transaction {
+                 MusicaSchema.select {
+                     MusicaSchema.album eq post_musica.album!! and (MusicaSchema.artista eq post_musica.artista!!)
+                 }.map {
+                     MusicaSchema.toObject(it)
+                 }
+             }
+
+             if (musica_query.size == 0) {
+                 transaction {
+                     MusicaSchema.select {
+                         it[name] = post_musica.name!!
+                         it[duracao] = post_musica.duracao!!
+                         it[artista] = post_musica.artista!!
+                         it[genero] = post_musica.genero!!
+                     }
+                 }
+                 return call.respondText(musica_query[0])
+             } else {
+                 return call.respondText("ERRO")
+             }
+         }
+
 
     }
 }
@@ -436,10 +670,10 @@ fun Application.myapp(){
 
 fun main(){
 
-    // Inicializa o server na porta 8080 com Engine Netty
+    // SUBINDO O SERVER NA PORTA 8080
     embeddedServer(
         Netty,
-        watchPaths = listOf("api-covid19"),
+        watchPaths = listOf("E-Music"),
         module=Application::myapp,
         port=8080
     ).start(wait = true)

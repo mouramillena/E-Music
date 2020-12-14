@@ -1,6 +1,17 @@
 package br.iesb.poo.resources.schemas
 
-import br.iesb.poo.resources.entesFederativos.Cidade
+
+import br.iesb.poo.resources.crud.Crud
+
+import br.iesb.poo.resources.mundoMusical.Musica
+import br.iesb.poo.resources.mundoMusical.Artista
+import br.iesb.poo.resources.mundoMusical.Album
+import br.iesb.poo.resources.mundoMusical.MundoMusical
+
+import br.iesb.poo.resources.schemas.MusicaSchema
+import br.iesb.poo.resources.schemas.ArtistaSchema
+import br.iesb.poo.resources.schemas.AlbumSchema
+import br.iesb.poo.resources.schemas.UsersSchema
 import br.iesb.poo.resources.user.Login
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
